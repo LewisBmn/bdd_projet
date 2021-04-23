@@ -16,22 +16,13 @@ using System.Windows.Shapes;
 namespace bdd_projet
 {
     /// <summary>
-    /// Logique d'interaction pour MainWindow.xaml
+    /// Logique d'interaction pour Pieces.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class Pieces : Page
     {
-        public MainWindow()
+        public Pieces()
         {
             InitializeComponent();
-        }
-
-        private void Velos_Click(object sender, RoutedEventArgs e)
-        {
-            Accueil.NavigationService.Navigate(new Velo());
-        }
-        private void Pieces_Click(object sender, RoutedEventArgs e)
-        {
-            Accueil.NavigationService.Navigate(new Pieces());
         }
     }
 }

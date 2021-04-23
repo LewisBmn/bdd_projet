@@ -7,6 +7,15 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        
+        <StackPanel Orientation="Vertical">
+            <Button x:Name="Velos" Content="Vélos" HorizontalAlignment="Left" 
+                    VerticalAlignment="Top" Margin="10,10,0,0" Width="50" Height="20"
+                    Click="Velos_Click"/>
+            <Button x:Name="Pieces" Content="Pièces" HorizontalAlignment="Left" 
+                    VerticalAlignment="Top" Margin="10,10,0,0" Width="50" Height="20"
+                    Click="Pieces_Click"/>
+        </StackPanel>
+        <Frame x:Name="Accueil" Margin="70,0,0,0" NavigationUIVisibility="Hidden">
+        </Frame>
     </Grid>
 </Window>
