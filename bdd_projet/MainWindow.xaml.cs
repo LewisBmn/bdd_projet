@@ -23,15 +23,55 @@ namespace bdd_projet
         public MainWindow()
         {
             InitializeComponent();
+            Accueil.NavigationService.Navigate(new Home());
         }
 
         private void Velos_Click(object sender, RoutedEventArgs e)
         {
             Accueil.NavigationService.Navigate(new Velo());
+            TglButton.IsChecked = false;
         }
         private void Pieces_Click(object sender, RoutedEventArgs e)
         {
             Accueil.NavigationService.Navigate(new Pieces());
+            TglButton.IsChecked = false;
+        }
+
+        private void ListViewItem_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if(TglButton.IsChecked==true)
+            {
+                tt_velos.Visibility = Visibility.Collapsed;
+                tt_pieces.Visibility = Visibility.Collapsed;
+                tt_home.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                tt_velos.Visibility = Visibility.Visible;
+                tt_pieces.Visibility = Visibility.Visible;
+                tt_home.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void TglButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+            //Accueil.Opacity = 1;
+        }
+
+        private void TglButton_Checked(object sender, RoutedEventArgs e)
+        {
+            //Accueil.Opacity = 0.3;
+        }
+
+        private void Accueil_PreviwMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            TglButton.IsChecked = false;
+        }
+
+        private void Home_Click(object sender, RoutedEventArgs e)
+        {
+            Accueil.NavigationService.Navigate(new Home());
+            TglButton.IsChecked = false;
         }
     }
 }
