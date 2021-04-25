@@ -6,9 +6,23 @@
       xmlns:local="clr-namespace:bdd_projet"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="730"
-      Title="Velo">
+      Title="Velo" Loaded="Velo_Loaded">
 
     <Grid>
-        <Button x:Name="Creation" Content="Création" HorizontalAlignment="Left" VerticalAlignment="Top" Width="50" Height="20" Margin="20,20,0,0"/>
+        <DataGrid Name="dataGrid1" Width="540" Margin="190,0,0,0"/>
+        <StackPanel HorizontalAlignment="Left" Width="190">
+            <Button x:Name="Creation" Content="Création" FontSize="10"
+                    HorizontalAlignment="Center" VerticalAlignment="Top" Width="60" Height="20" Margin="10,20,0,0"
+                    Click="Creation_Click" Cursor="Hand"/>
+            <Button x:Name="Suppr" Content="Suppression" FontSize="10"
+                    HorizontalAlignment="Center" VerticalAlignment="Top" Width="60" Height="20" Margin="10,20,0,0"
+                    Click="Suppr_Click" Cursor="Hand"/>
+            <TextBox x:Name="num" Text="N° du produit" Height="20" Width="110" TextAlignment="Center"
+                     HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="DarkGray" Margin="10, 200, 0 0"
+                     IsEnabled="False" Visibility="Hidden" GotFocus="num_GotFocus" LostFocus="num_LostFocus" KeyDown="num_KeyDown"/>
+            <Button x:Name="del" Content="Delete" FontSize="12"
+                    HorizontalAlignment="Center" VerticalAlignment="Top" Width="60" Height="20" Margin="60,10,0,0"
+                    Click="del_Click" Cursor="Hand" IsEnabled="False" Visibility="Hidden"/>
+        </StackPanel>
     </Grid>
 </Page>

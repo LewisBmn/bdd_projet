@@ -152,12 +152,6 @@
         <Grid x:Name="NavPanel" HorizontalAlignment="Left" Width="70" 
               Background="DarkGray" Panel.ZIndex="1">
             <StackPanel>
-                <!--<Button x:Name="Home" Width="70" Height="50"
-                        Style="{DynamicResource VelosButtonStyle}" Cursor="Hand">
-                    <StackPanel>
-                        <Image Source="F:\Téléchargements\page-d'accueil.png" Width="30"/>
-                    </StackPanel>
-                </Button>-->
                 <StackPanel Orientation="Horizontal">
                     <ToggleButton x:Name="TglButton" Height="35" Width="35" 
                                   BorderThickness="0" Margin="17,10,0,0" Cursor="Hand"
@@ -219,7 +213,7 @@
                         <StackPanel Orientation="Horizontal"
                                     Width="230">
                             <Button x:Name="Home" Margin="0,5,0,0"
-                                    Width="200" Height="50" Click="Home_Click" FontSize="14" Cursor="Hand"
+                                    Width="200" Height="60" Click="Home_Click" FontSize="14" Cursor="Hand"
                                     Style="{DynamicResource VelosButtonStyle}"
                                     Panel.ZIndex="1">
                                 <Button.Background>
@@ -229,8 +223,8 @@
                                                 AlignmentY="Center">
                                         <ImageBrush.Transform>
                                             <TransformGroup>
-                                                <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
-                                                <TranslateTransform X="9"/>
+                                                <ScaleTransform ScaleX="0.5" ScaleY="0.5"/>
+                                                <TranslateTransform X="12"/>
                                             </TransformGroup>
                                         </ImageBrush.Transform>
 
@@ -266,7 +260,7 @@
                                         <ImageBrush.Transform>
                                             <TransformGroup>
                                                 <ScaleTransform ScaleX=".7" ScaleY=".7"/>
-                                                <TranslateTransform X="7"/>
+                                                <TranslateTransform X="10"/>
                                             </TransformGroup>
                                         </ImageBrush.Transform>
 
@@ -302,7 +296,7 @@
                                         <ImageBrush.Transform>
                                             <TransformGroup>
                                                 <ScaleTransform ScaleX=".6" ScaleY=".6"/>
-                                                <TranslateTransform X="10"/>
+                                                <TranslateTransform X="13"/>
                                             </TransformGroup>
                                         </ImageBrush.Transform>
 

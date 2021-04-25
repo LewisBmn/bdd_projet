@@ -28,7 +28,7 @@ namespace bdd_projet
 
         private void Velos_Click(object sender, RoutedEventArgs e)
         {
-            Accueil.NavigationService.Navigate(new Velo());
+            Accueil.NavigationService.Navigate(new Velo(Accueil));
             TglButton.IsChecked = false;
         }
         private void Pieces_Click(object sender, RoutedEventArgs e)
