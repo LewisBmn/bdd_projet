@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MySql.Data.MySqlClient;
 
 namespace bdd_projet
 {
@@ -20,20 +21,36 @@ namespace bdd_projet
     /// </summary>
     public partial class MainWindow : Window
     {
+        MySqlConnection maConnexion;
+
         public MainWindow()
         {
             InitializeComponent();
             Accueil.NavigationService.Navigate(new Home());
+            try
+            {
+                string connexionString = "SERVER=localhost;PORT=3306;" +
+                                         "DATABASE=velomax;" +
+                                         "UID=root;PASSWORD=root";
+
+                maConnexion = new MySqlConnection(connexionString);
+                maConnexion.Open();
+            }
+            catch (MySqlException e)
+            {
+                MessageBox.Show(" ErreurConnexion : " + e.ToString());
+                return;
+            }
         }
 
         private void Velos_Click(object sender, RoutedEventArgs e)
         {
-            Accueil.NavigationService.Navigate(new Velo(Accueil));
+            Accueil.NavigationService.Navigate(new Velo(Accueil, maConnexion));
             TglButton.IsChecked = false;
         }
         private void Pieces_Click(object sender, RoutedEventArgs e)
         {
-            Accueil.NavigationService.Navigate(new Pieces());
+            Accueil.NavigationService.Navigate(new Pieces(Accueil, maConnexion));
             TglButton.IsChecked = false;
         }
 
@@ -52,22 +69,10 @@ namespace bdd_projet
                 tt_home.Visibility = Visibility.Visible;
             }
         }
-
-        private void TglButton_Unchecked(object sender, RoutedEventArgs e)
-        {
-            //Accueil.Opacity = 1;
-        }
-
-        private void TglButton_Checked(object sender, RoutedEventArgs e)
-        {
-            //Accueil.Opacity = 0.3;
-        }
-
         private void Accueil_PreviwMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             TglButton.IsChecked = false;
         }
-
         private void Home_Click(object sender, RoutedEventArgs e)
         {
             Accueil.NavigationService.Navigate(new Home());

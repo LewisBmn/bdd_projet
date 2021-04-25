@@ -67,11 +67,20 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CreationPiece.xaml.cs">
+      <DependentUpon>CreationPiece.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CreationVelo.xaml.cs">
       <DependentUpon>CreationVelo.xaml</DependentUpon>
     </Compile>
     <Compile Include="Home.xaml.cs">
       <DependentUpon>Home.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ModifPiece.xaml.cs">
+      <DependentUpon>ModifPiece.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ModifVelo.xaml.cs">
+      <DependentUpon>ModifVelo.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pieces.xaml.cs">
       <DependentUpon>Pieces.xaml</DependentUpon>
@@ -79,6 +88,10 @@
     <Compile Include="Velo.xaml.cs">
       <DependentUpon>Velo.xaml</DependentUpon>
     </Compile>
+    <Page Include="CreationPiece.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="CreationVelo.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -99,6 +112,14 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="ModifPiece.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ModifVelo.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pieces.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

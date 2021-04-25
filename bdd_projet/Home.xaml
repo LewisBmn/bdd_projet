@@ -9,6 +9,6 @@
       Title="Home">
 
     <Grid>
-        <TextBlock Text="VéloMax" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0"/>
+        <TextBlock Text="VéloMax" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,20,0,200" FontFamily="Brush Script MT" FontSize="60"/>
     </Grid>
 </Page>

@@ -6,9 +6,26 @@
       xmlns:local="clr-namespace:bdd_projet"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="730"
-      Title="Pieces">
+      Title="Pieces" Loaded="Pieces_Loaded">
 
     <Grid>
-        <Button x:Name="Maj" Content="Màj" HorizontalAlignment="Left" VerticalAlignment="Top" Width="50" Height="20" Margin="20,20,0,0" />
+        <DataGrid Name="dataGrid1" Width="600" Margin="130,0,0,0"/>
+        <StackPanel HorizontalAlignment="Left" Width="130">
+            <Button x:Name="Creation" Content="Création" FontSize="10"
+                    HorizontalAlignment="Center" VerticalAlignment="Top" Width="60" Height="20" Margin="10,20,0,0"
+                     Cursor="Hand" Click="Creation_Click"/>
+            <Button x:Name="Suppr" Content="Suppression" FontSize="10"
+                    HorizontalAlignment="Center" VerticalAlignment="Top" Width="60" Height="20" Margin="10,20,0,0"
+                    Cursor="Hand" Click="Suppr_Click"/>
+            <Button x:Name="Modify" Content="Modification" VerticalAlignment="Top" Width="60" Height="20" Margin="10,20,0,0"
+                    Click="Modify_Click" Cursor="Hand" FontSize="10"/>
+            <TextBox x:Name="num" Text="N° du produit" Height="20" Width="110" TextAlignment="Center"
+                     HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="DarkGray" Margin="10, 200, 0 0"
+                     IsEnabled="False" Visibility="Hidden" GotFocus="num_GotFocus" LostFocus="num_LostFocus"
+                     KeyDown="num_KeyDown"/>
+            <Button x:Name="del" Content="Delete" FontSize="12"
+                    HorizontalAlignment="Center" VerticalAlignment="Top" Width="60" Height="20" Margin="60,10,0,0"
+                    Cursor="Hand" IsEnabled="False" Visibility="Hidden" Click="del_Click"/>
+        </StackPanel>
     </Grid>
 </Page>
