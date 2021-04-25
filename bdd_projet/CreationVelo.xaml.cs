@@ -244,7 +244,7 @@ namespace bdd_projet
                 command.Dispose();
                 if (numDel == true)
                 {
-                    frame.NavigationService.Navigate(new Velo(frame));
+                    frame.NavigationService.Navigate(new Velo(frame, maConnexion));
                 }
             }
         }

@@ -23,29 +23,16 @@ namespace bdd_projet
     public partial class Velo : Page
     {
         private Frame frame;
-        MySqlConnection maConnexion = null;
+        MySqlConnection maConnexion;
         List<int> listeNum = new List<int> { };
 
         private bool numDel = false;
 
-        public Velo(Frame frame)
+        public Velo(Frame frame, MySqlConnection myConnection)
         {
             InitializeComponent();
             this.frame = frame;
-            try
-            {
-                string connexionString = "SERVER=localhost;PORT=3306;" +
-                                         "DATABASE=velomax;" +
-                                         "UID=root;PASSWORD=root";
-
-                maConnexion = new MySqlConnection(connexionString);
-                maConnexion.Open();
-            }
-            catch (MySqlException e)
-            {
-                MessageBox.Show(" ErreurConnexion : " + e.ToString());
-                return;
-            }
+            this.maConnexion = myConnection;
         }
 
         private void Creation_Click(object sender, RoutedEventArgs e)
@@ -107,7 +94,7 @@ namespace bdd_projet
                 {
                     command.ExecuteNonQuery();
                 }
-                catch (MySqlException er)
+                catch (MySqlException)
                 {
                     return;
                 }
@@ -120,11 +107,13 @@ namespace bdd_projet
                     num.TextAlignment = TextAlignment.Center;
                     num.BorderBrush = Brushes.Red;
                     num.Foreground = Brushes.Red;
+                    FocusManager.SetFocusedElement(FocusManager.GetFocusScope(num), null);
+                    Keyboard.ClearFocus();
                     numDel = false;
                 }
                 if (numDel == true)
                 {
-                    frame.NavigationService.Navigate(new Velo(frame));
+                    frame.NavigationService.Navigate(new Velo(frame, maConnexion));
                 }
             }
         }
@@ -159,6 +148,11 @@ namespace bdd_projet
             {
                 del_Click(sender, e);
             }
+        }
+
+        private void Modify_Click(object sender, RoutedEventArgs e)
+        {
+            frame.NavigationService.Navigate(new ModifVelo(maConnexion, frame, listeNum));
         }
     }
 }

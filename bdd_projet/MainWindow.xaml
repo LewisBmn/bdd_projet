@@ -50,7 +50,6 @@
                                 <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="Transparent"/>
                                 <Setter Property="BorderBrush" TargetName="border" Value="Transparent"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
@@ -155,7 +154,7 @@
                 <StackPanel Orientation="Horizontal">
                     <ToggleButton x:Name="TglButton" Height="35" Width="35" 
                                   BorderThickness="0" Margin="17,10,0,0" Cursor="Hand"
-                                  Style="{StaticResource tb_style}" Unchecked="TglButton_Unchecked" Checked="TglButton_Checked">
+                                  Style="{StaticResource tb_style}" >
                         <ToggleButton.Background>
                             <ImageBrush ImageSource="Assets/tgBtn_default.png"
                                         Stretch="None"/>
@@ -343,10 +342,10 @@
                                                 </MultiTrigger.Conditions>
                                                 <Setter Property="Background"
                                                         TargetName="Bd"
-                                                        Value="#404D5B"/>
+                                                        Value="LightGray"/>
                                                 <Setter Property="BorderBrush"
                                                         TargetName="Bd"
-                                                        Value="#404D5B"/>
+                                                        Value="LightGray"/>
 
                                             </MultiTrigger>
                                         </ControlTemplate.Triggers>

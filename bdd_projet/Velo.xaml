@@ -17,6 +17,8 @@
             <Button x:Name="Suppr" Content="Suppression" FontSize="10"
                     HorizontalAlignment="Center" VerticalAlignment="Top" Width="60" Height="20" Margin="10,20,0,0"
                     Click="Suppr_Click" Cursor="Hand"/>
+            <Button x:Name="Modify" Content="Modification" VerticalAlignment="Top" Width="60" Height="20" Margin="10,20,0,0"
+                    Click="Modify_Click" Cursor="Hand" FontSize="10"/>
             <TextBox x:Name="num" Text="N° du produit" Height="20" Width="110" TextAlignment="Center"
                      HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="DarkGray" Margin="10, 200, 0 0"
                      IsEnabled="False" Visibility="Hidden" GotFocus="num_GotFocus" LostFocus="num_LostFocus" KeyDown="num_KeyDown"/>
