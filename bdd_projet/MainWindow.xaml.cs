@@ -41,6 +41,8 @@ namespace bdd_projet
                 MessageBox.Show(" ErreurConnexion : " + e.ToString());
                 return;
             }
+            MinimizeButton.Click += (s, e) => WindowState = WindowState.Minimized;
+            CloseButton.Click += (s, e) => Close();
         }
 
         private void Velos_Click(object sender, RoutedEventArgs e)
