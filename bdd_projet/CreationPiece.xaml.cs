@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MySql.Data.MySqlClient;
+using System.Windows.Media.Animation;
+using System.Windows.Threading;
 
 namespace bdd_projet
 {
@@ -21,10 +23,6 @@ namespace bdd_projet
     /// </summary>
     public partial class CreationPiece : Page
     {
-
-        private MySqlConnection maConnexion;
-        private Frame frame;
-
         bool numDel = false;
         bool nomDel = false;
         bool introDel = false;
@@ -34,11 +32,9 @@ namespace bdd_projet
         bool approDel = false;
         bool prixDel = false;
 
-        public CreationPiece(MySqlConnection maConnexion, Frame frame)
+        public CreationPiece()
         {
             InitializeComponent();
-            this.maConnexion = maConnexion;
-            this.frame = frame;
         }
 
         #region GotFocus
@@ -221,7 +217,7 @@ namespace bdd_projet
 
             bool valDc = false;
 
-            if (string.IsNullOrWhiteSpace(num.Text) == true || num.Text == "N° du produit")
+            if (string.IsNullOrWhiteSpace(num.Text) == true || num.Text == "N° du produit" || num.Text == "Invalid argument")
             {
                 canSubmit = false;
                 num.Text = "Invalid argument";
@@ -230,7 +226,8 @@ namespace bdd_projet
                 num.Foreground = Brushes.Red;
                 numDel = false;
             }
-            if (string.IsNullOrWhiteSpace(nom.Text) == true || int.TryParse(nom.Text, out int i) == true || nom.Text == "Fournisseur")
+            if (string.IsNullOrWhiteSpace(nom.Text) == true || int.TryParse(nom.Text, out int i) == true || nom.Text == "Fournisseur"
+                || nom.Text == "Invalid argument")
             {
                 canSubmit = false;
                 nom.Text = "Invalid argument";
@@ -239,7 +236,7 @@ namespace bdd_projet
                 nom.Foreground = Brushes.Red;
                 nomDel = false;
             }
-            if (string.IsNullOrWhiteSpace(desc.Text) || desc.Text == "Description")
+            if (string.IsNullOrWhiteSpace(desc.Text) || desc.Text == "Description" || desc.Text == "Invalid argument")
             {
                 canSubmit = false;
                 desc.Text = "Invalid argument";
@@ -248,7 +245,8 @@ namespace bdd_projet
                 desc.Foreground = Brushes.Red;
                 descDel = false;
             }
-            if (string.IsNullOrWhiteSpace(numfourn.Text) == true || numfourn.Text == "n° produit fournisseur")
+            if (string.IsNullOrWhiteSpace(numfourn.Text) == true || numfourn.Text == "n° produit fournisseur"
+                || numfourn.Text == "Invalid argument")
             {
                 canSubmit = false;
                 numfourn.Text = "Invalid argument";
@@ -295,14 +293,14 @@ namespace bdd_projet
                 dateDisc.Foreground = Brushes.Red;
                 discDel = false;
             }
-            if (dateDisc.Text != "Date discontinuité" && string.IsNullOrWhiteSpace(dateDisc.Text) == false)
+            if (dateDisc.Text != "Date discontinuité" && string.IsNullOrWhiteSpace(dateDisc.Text) == false && dateDisc.Text != "Invalid argument")
             {
                 valDc = true;
             }
             if (canSubmit)
             {
                 string insertTable = "insert into pieces values (@num, @description, @nom, @numfourn, @prix, @dtIn, @dtDc, @delai)";
-                MySqlCommand command = maConnexion.CreateCommand();
+                MySqlCommand command = MainWindow.maConnexion.CreateCommand();
                 command.CommandText = insertTable;
                 command.Parameters.Add("@num", MySqlDbType.VarChar).Value = num.Text.ToUpper();
                 command.Parameters.Add("@description", MySqlDbType.VarChar).Value = GoodMaj(desc.Text);
@@ -340,9 +338,33 @@ namespace bdd_projet
                 command.Dispose();
                 if (numDel == true)
                 {
-                    frame.NavigationService.Navigate(new Pieces(frame, maConnexion));
+                    MainWindow.Accueil.NavigationService.Navigate(new Pieces());
                 }
             }
+            if (canSubmit == false)
+            {
+                ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(-10, 0, 0, 0), new Thickness(10, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 400));
+                marginAn.EasingFunction = new BounceEase();
+
+                MainWindow.Accueil.BeginAnimation(Control.MarginProperty, marginAn);
+                Loading();
+            }
+        }
+
+        DispatcherTimer timer = new DispatcherTimer();
+        private void timer_tick(object sender, EventArgs e)
+        {
+            timer.Stop();
+            ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(10, 0, 0, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 1));
+            marginAn.EasingFunction = new QuadraticEase();
+
+            MainWindow.Accueil.BeginAnimation(Control.MarginProperty, marginAn);
+        }
+        void Loading() //0 pour CreationVelo, 1 pour ModifVelo
+        {
+            timer.Tick += timer_tick;
+            timer.Interval = TimeSpan.FromSeconds(0.29);
+            timer.Start();
         }
         private string GoodMaj(string str)
         {
@@ -355,6 +377,33 @@ namespace bdd_projet
                 return char.ToUpper(str[0]) + str.Substring(1);
             }
             return str.ToUpper();
+        }
+        private void KeyEnter(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                Submit_Click(sender, e);
+                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(desc), null);
+                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(nom), null);
+                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(numfourn), null);
+                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(prix), null);
+                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(dateIntro), null);
+                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(dateDisc), null);
+                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(appro), null);
+                Keyboard.ClearFocus();
+            }
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            ThicknessAnimation db = new ThicknessAnimation(new Thickness(0, 0, 750, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 800));
+            db.EasingFunction = new ExponentialEase();
+
+            DoubleAnimation doubleAnimation = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(1.2));
+            doubleAnimation.EasingFunction = new ExponentialEase();
+
+            MainWindow.Accueil.BeginAnimation(Control.MarginProperty, db);
+            MainWindow.Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
         }
     }
 }

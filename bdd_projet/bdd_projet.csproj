@@ -67,6 +67,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Black.xaml.cs">
+      <DependentUpon>Black.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CreationPiece.xaml.cs">
       <DependentUpon>CreationPiece.xaml</DependentUpon>
     </Compile>
@@ -88,6 +91,10 @@
     <Compile Include="Velo.xaml.cs">
       <DependentUpon>Velo.xaml</DependentUpon>
     </Compile>
+    <Page Include="Black.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="CreationPiece.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -157,15 +164,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Assets\closeBtn_default.png" />
-    <Resource Include="Assets\closeBtn_MouseOver.png" />
-    <Resource Include="Assets\img_background.png" />
-    <Resource Include="Assets\img_contact.png" />
-    <Resource Include="Assets\img_home.png" />
-    <Resource Include="Assets\img_map.png" />
-    <Resource Include="Assets\img_message.png" />
-    <Resource Include="Assets\img_setting.png" />
-    <Resource Include="Assets\img_signout.png" />
     <Resource Include="Assets\tgBtn_default.png" />
     <Resource Include="Assets\tgBtn_MouseOver.png" />
   </ItemGroup>
@@ -182,13 +180,13 @@
     <Resource Include="Assets\minus.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Assets\close.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Assets\close-cross.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\velo-de-route.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\delete.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\MaterialDesignThemes.4.0.0\build\MaterialDesignThemes.targets" Condition="Exists('..\packages\MaterialDesignThemes.4.0.0\build\MaterialDesignThemes.targets')" />

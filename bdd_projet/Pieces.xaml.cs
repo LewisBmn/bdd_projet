@@ -14,27 +14,25 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MySql.Data.MySqlClient;
 using System.Data;
+using System.Windows.Media.Animation;
+using System.Windows.Threading;
 
 namespace bdd_projet
 {
     public partial class Pieces : Page
     {
-        private Frame frame;
-        private MySqlConnection maConnexion;
         private bool numDel = false;
         private List<string> listeNum = new List<string> { };
 
-        public Pieces(Frame frame, MySqlConnection maConnexion)
+        public Pieces()
         {
             InitializeComponent();
-            this.frame = frame;
-            this.maConnexion = maConnexion;
         }
 
         private void Pieces_Loaded(object sender, RoutedEventArgs e)
         {
             string query = "Select * from pieces";
-            MySqlCommand command = maConnexion.CreateCommand();
+            MySqlCommand command = MainWindow.maConnexion.CreateCommand();
             command.CommandText = query;
 
             MySqlDataReader reader = command.ExecuteReader();
@@ -49,11 +47,56 @@ namespace bdd_projet
                 listeNum.Add(reader.GetString(0).ToLower());
             }
             command.Dispose();
+
+            DoubleAnimation doubleAnimation = new DoubleAnimation(0, 1, new TimeSpan(0, 0, 0, 2, 0));
+            doubleAnimation.EasingFunction = new ExponentialEase();
+
+            ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(0, 20, 0, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 400));
+            marginAn.EasingFunction = new ExponentialEase();
+
+            MainWindow.Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
+            MainWindow.Accueil.BeginAnimation(Control.MarginProperty, marginAn);
         }
 
+        DispatcherTimer timer = new DispatcherTimer();
+
+        private void timer_tick0(object sender, EventArgs e)
+        {
+            timer.Stop();
+            MainWindow.Accueil.NavigationService.Navigate(new CreationPiece());
+        }
+        private void timer_tick1(object sender, EventArgs e)
+        {
+            timer.Stop();
+            MainWindow.Accueil.NavigationService.Navigate(new ModifPiece(listeNum));
+        }
+        void Loading(int val) //0 pour CreationPiece, 1 pour ModifPiece
+        {
+            if (val == 0)
+            {
+                timer.Tick += timer_tick0;
+                timer.Interval = TimeSpan.FromSeconds(0.35);
+                timer.Start();
+            }
+            if (val == 1)
+            {
+                timer.Tick += timer_tick1;
+                timer.Interval = TimeSpan.FromSeconds(0.35);
+                timer.Start();
+            }
+        }
         private void Creation_Click(object sender, RoutedEventArgs e)
         {
-            frame.NavigationService.Navigate(new CreationPiece(maConnexion, frame));
+            ThicknessAnimation db = new ThicknessAnimation(new Thickness(0, 0, 0, 0), new Thickness(730, 0, 0, 0), new TimeSpan(0, 0, 0, 1, 0));
+            db.EasingFunction = new ExponentialEase();
+
+            DoubleAnimation doubleAnimation = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.35));
+            doubleAnimation.EasingFunction = new ExponentialEase();
+
+            MainWindow.Accueil.BeginAnimation(Control.MarginProperty, db);
+            MainWindow.Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
+
+            Loading(0);
         }
         private void Suppr_Click(object sender, RoutedEventArgs e)
         {
@@ -61,6 +104,14 @@ namespace bdd_projet
             num.Visibility = Visibility.Visible;
             del.Visibility = Visibility.Visible;
             del.IsEnabled = true;
+
+            Submission.Opacity = 1;
+
+            ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(-220, 0, 0, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 500));
+            marginAn.EasingFunction = new QuadraticEase();
+
+
+            Submission.BeginAnimation(Control.MarginProperty, marginAn);
         }
 
         private void del_Click(object sender, RoutedEventArgs e)
@@ -80,7 +131,7 @@ namespace bdd_projet
             {
                 string delTable = "DELETE FROM pieces WHERE numPiece = @num";
 
-                MySqlCommand command = maConnexion.CreateCommand();
+                MySqlCommand command = MainWindow.maConnexion.CreateCommand();
                 command.CommandText = delTable;
                 command.Parameters.Add("@num", MySqlDbType.String).Value = num.Text.ToLower();
 
@@ -107,7 +158,7 @@ namespace bdd_projet
                 }
                 if (numDel == true)
                 {
-                    frame.NavigationService.Navigate(new Pieces(frame, maConnexion));
+                    MainWindow.Accueil.NavigationService.Navigate(new Pieces());
                 }
             }
         }
@@ -146,7 +197,16 @@ namespace bdd_projet
 
         private void Modify_Click(object sender, RoutedEventArgs e)
         {
-            frame.NavigationService.Navigate(new ModifPiece(maConnexion, frame, listeNum));
+            ThicknessAnimation db = new ThicknessAnimation(new Thickness(0, 0, 0, 0), new Thickness(730, 0, 0, 0), new TimeSpan(0, 0, 0, 1, 0));
+            db.EasingFunction = new ExponentialEase();
+
+            DoubleAnimation doubleAnimation = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.35));
+            doubleAnimation.EasingFunction = new ExponentialEase();
+
+            MainWindow.Accueil.BeginAnimation(Control.MarginProperty, db);
+            MainWindow.Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
+
+            Loading(1);
         }
     }
 }

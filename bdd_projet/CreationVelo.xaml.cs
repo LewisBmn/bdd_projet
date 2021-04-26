@@ -13,6 +13,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MySql.Data.MySqlClient;
+using System.Windows.Media.Animation;
+using System.Timers;
+using System.Windows.Threading;
 
 namespace bdd_projet
 {
@@ -29,17 +32,10 @@ namespace bdd_projet
         private bool introDel = false;
         private bool discDel = false;
 
-        private MySqlConnection maConnexion;
-
-        private Frame frame;
-
-        public CreationVelo(MySqlConnection maConnexion, Frame frame)
+        public CreationVelo()
         {
             InitializeComponent();
-            this.maConnexion = maConnexion;
-            this.frame = frame;
         }
-
         private void num_GotFocus(object sender, RoutedEventArgs e)
         {
             if (numDel == false)
@@ -144,7 +140,8 @@ namespace bdd_projet
                 num.Foreground = Brushes.Red;
                 numDel = false;
             }
-            if (string.IsNullOrWhiteSpace(nom.Text) == true || int.TryParse(nom.Text, out int i) == true || nom.Text == "Nom du produit")
+            if (string.IsNullOrWhiteSpace(nom.Text) == true || int.TryParse(nom.Text, out int i) == true
+                || nom.Text == "Nom du produit" || nom.Text == "Invalid argument")
             {
                 canSubmit = false;
                 nom.Text = "Invalid argument";
@@ -199,14 +196,14 @@ namespace bdd_projet
                 dateDisc.Foreground = Brushes.Red;
                 discDel = false;
             }
-            if (dateDisc.Text != "Date discontinuité" && string.IsNullOrWhiteSpace(dateDisc.Text) == false)
+            if (dateDisc.Text != "Date discontinuité" && string.IsNullOrWhiteSpace(dateDisc.Text) == false && dateDisc.Text != "Invalid argument")
             {
                 valDc = true;
             }
             if (canSubmit)
             {
                 string insertTable = "insert into velo values (@num, @nom, @grandeur, @cost, @type, @dtIn, @dtDc)";
-                MySqlCommand command = maConnexion.CreateCommand();
+                MySqlCommand command = MainWindow.maConnexion.CreateCommand();
                 command.CommandText = insertTable;
                 command.Parameters.Add("@num", MySqlDbType.Int32).Value = val;
                 command.Parameters.Add("@nom", MySqlDbType.VarChar).Value = GoodMaj(nom.Text);
@@ -244,9 +241,32 @@ namespace bdd_projet
                 command.Dispose();
                 if (numDel == true)
                 {
-                    frame.NavigationService.Navigate(new Velo(frame, maConnexion));
+                    MainWindow.Accueil.NavigationService.Navigate(new Velo());
                 }
             }
+            if (canSubmit == false)
+            {
+                ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(-10, 0, 0, 0), new Thickness(10, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 400));
+                marginAn.EasingFunction = new BounceEase();
+
+                MainWindow.Accueil.BeginAnimation(Control.MarginProperty, marginAn);
+                Loading();
+            }
+        }
+        DispatcherTimer timer = new DispatcherTimer();
+        private void timer_tick(object sender, EventArgs e)
+        {
+            timer.Stop();
+            ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(10, 0, 0, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 1));
+            marginAn.EasingFunction = new QuadraticEase();
+
+            MainWindow.Accueil.BeginAnimation(Control.MarginProperty, marginAn);
+        }
+        void Loading() //0 pour CreationVelo, 1 pour ModifVelo
+        {
+            timer.Tick += timer_tick;
+            timer.Interval = TimeSpan.FromSeconds(0.29);
+            timer.Start();
         }
 
         private void num_LostFocus(object sender, RoutedEventArgs e)
@@ -316,15 +336,41 @@ namespace bdd_projet
         }
         private string GoodMaj(string str)
         {
-            if(string.IsNullOrWhiteSpace(str))
+            if (string.IsNullOrWhiteSpace(str))
             {
                 return null;
             }
-            if(str.Length>1 && str.ToLower() != "vtt" && str.ToLower()!="bmx")
+            if (str.Length > 1 && str.ToLower() != "vtt" && str.ToLower() != "bmx")
             {
                 return char.ToUpper(str[0]) + str.Substring(1);
             }
             return str.ToUpper();
+        }
+        private void KeyEnter(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                Submit_Click(sender, e);
+                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(nom), null);
+                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(grandeur), null);
+                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(prix), null);
+                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(type), null);
+                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(dateIntro), null);
+                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(dateDisc), null);
+                Keyboard.ClearFocus();
+            }
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            ThicknessAnimation db = new ThicknessAnimation(new Thickness(0, 0, 750, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 800));
+            db.EasingFunction = new ExponentialEase();
+
+            DoubleAnimation doubleAnimation = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(1.2));
+            doubleAnimation.EasingFunction = new ExponentialEase();
+
+            MainWindow.Accueil.BeginAnimation(Control.MarginProperty, db);
+            MainWindow.Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
         }
     }
 }

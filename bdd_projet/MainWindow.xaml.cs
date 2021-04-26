@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MySql.Data.MySqlClient;
+using System.Windows.Threading;
+using System.Windows.Media.Animation;
 
 namespace bdd_projet
 {
@@ -21,12 +23,26 @@ namespace bdd_projet
     /// </summary>
     public partial class MainWindow : Window
     {
-        MySqlConnection maConnexion;
+        public static MySqlConnection maConnexion;
+        public static Frame Accueil;
 
         public MainWindow()
         {
             InitializeComponent();
+
+            MinimizeButton.Click += (s, e) => WindowState = WindowState.Minimized;
+            CloseButton.Click += (s, e) => Close();
+
+            Accueil = AccueilW;
             Accueil.NavigationService.Navigate(new Home());
+
+            DoubleAnimation db = new DoubleAnimation(100, 450, TimeSpan.FromSeconds(1.5));
+            CubicEase ease = new CubicEase();
+            ease.EasingMode = EasingMode.EaseOut;
+            db.EasingFunction = ease;
+
+            this.BeginAnimation(Control.HeightProperty, db);
+
             try
             {
                 string connexionString = "SERVER=localhost;PORT=3306;" +
@@ -41,24 +57,112 @@ namespace bdd_projet
                 MessageBox.Show(" ErreurConnexion : " + e.ToString());
                 return;
             }
-            MinimizeButton.Click += (s, e) => WindowState = WindowState.Minimized;
-            CloseButton.Click += (s, e) => Close();
         }
+        DispatcherTimer timer = new DispatcherTimer();
+        private void timer_tick0(object sender, EventArgs e)
+        {
+            timer.Stop();
+            Accueil.Visibility = Visibility.Visible;
+            Transition_Home();
+        }
+        private void timer_tick1(object sender, EventArgs e)
+        {
+            timer.Stop();
+            Accueil.Visibility = Visibility.Visible;
+            Transition_Velo();
+        }
+        private void timer_tick2(object sender, EventArgs e)
+        {
+            timer.Stop();
+            Accueil.Visibility = Visibility.Visible;
+            Transition_Pieces();
+        }
+        void Loading(int val) //1 = vélo ; 0 = home ; 2 = pieces
+        {
+            if (val == 0)
+            {
+                timer.Tick += timer_tick0;
+                timer.Interval = TimeSpan.FromSeconds(0.15);
+                timer.Start();
+            }
+            if (val == 1)
+            {
+                timer.Tick += timer_tick1;
+                timer.Interval = TimeSpan.FromSeconds(0.15);
+                timer.Start();
+            }
+            if (val == 2)
+            {
+                timer.Tick += timer_tick2;
+                timer.Interval = TimeSpan.FromSeconds(0.15);
+                timer.Start();
+            }
+        }
+        private void Click(int val)
+        {
+            DoubleAnimation doubleAnimation = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.15));
+            doubleAnimation.EasingFunction = new ExponentialEase();
 
+            ThicknessAnimation marginAn = new ThicknessAnimation();
+            if (Accueil.NavigationService.Content.GetType().ToString() == "bdd_projet.Home")
+            {
+                marginAn = new ThicknessAnimation(new Thickness(0, 0, 0, 0), new Thickness(0, 0, 0, 270), new TimeSpan(0, 0, 0, 0, 500));
+            }
+            else
+            {
+                marginAn = new ThicknessAnimation(new Thickness(0, 0, 0, 0), new Thickness(0, 0, 0, 100), new TimeSpan(0, 0, 0, 0, 500));
+            }
+            marginAn.EasingFunction = new ExponentialEase();
+
+            Accueil.Opacity = 1;
+
+            Accueil.BeginAnimation(Control.MarginProperty, marginAn);
+            Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
+
+            Loading(val);
+        }
+        #region Click/Transitions
+        private void Home_Click(object sender, RoutedEventArgs e)
+        {
+            Click(0);
+        }
         private void Velos_Click(object sender, RoutedEventArgs e)
         {
-            Accueil.NavigationService.Navigate(new Velo(Accueil, maConnexion));
-            TglButton.IsChecked = false;
+            Click(1);
         }
         private void Pieces_Click(object sender, RoutedEventArgs e)
         {
-            Accueil.NavigationService.Navigate(new Pieces(Accueil, maConnexion));
-            TglButton.IsChecked = false;
+            Click(2);
         }
 
+        private void Transition_Home()
+        {
+            Accueil.NavigationService.Navigate(new Home());
+            TglButton.IsChecked = false;
+
+            DoubleAnimation doubleAnimation = new DoubleAnimation(0, 1, new TimeSpan(0, 0, 0, 2, 0));
+            doubleAnimation.EasingFunction = new ExponentialEase();
+
+            ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(0, 200, 0, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 400));
+            marginAn.EasingFunction = new ExponentialEase();
+
+            Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
+            Accueil.BeginAnimation(Control.MarginProperty, marginAn);
+        }
+        private void Transition_Velo()
+        {
+            Accueil.NavigationService.Navigate(new Velo());
+            TglButton.IsChecked = false;
+        }
+        private void Transition_Pieces()
+        {
+            Accueil.NavigationService.Navigate(new Pieces());
+            TglButton.IsChecked = false;
+        }
+        #endregion
         private void ListViewItem_MouseEnter(object sender, MouseEventArgs e)
         {
-            if(TglButton.IsChecked==true)
+            if (TglButton.IsChecked == true)
             {
                 tt_velos.Visibility = Visibility.Collapsed;
                 tt_pieces.Visibility = Visibility.Collapsed;
@@ -75,10 +179,9 @@ namespace bdd_projet
         {
             TglButton.IsChecked = false;
         }
-        private void Home_Click(object sender, RoutedEventArgs e)
+        private void Loader_Loaded(object sender, RoutedEventArgs e)
         {
-            Accueil.NavigationService.Navigate(new Home());
-            TglButton.IsChecked = false;
+
         }
     }
 }

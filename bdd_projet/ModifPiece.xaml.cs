@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MySql.Data.MySqlClient;
+using System.Windows.Media.Animation;
+using System.Windows.Threading;
 
 namespace bdd_projet
 {
@@ -21,8 +23,6 @@ namespace bdd_projet
     /// </summary>
     public partial class ModifPiece : Page
     {
-        private MySqlConnection maConnexion;
-        private Frame frame;
         private List<string> listeNum = new List<string> { };
 
         bool numDel = false;
@@ -35,11 +35,9 @@ namespace bdd_projet
         bool prixDel = false;
         bool unable = false;
 
-        public ModifPiece(MySqlConnection maConnexion, Frame frame, List<string> listeNum)
+        public ModifPiece(List<string> listeNum)
         {
             InitializeComponent();
-            this.maConnexion = maConnexion;
-            this.frame = frame;
             this.listeNum = listeNum;
             unable = true;
         }
@@ -243,7 +241,7 @@ namespace bdd_projet
 
         public void Submit_Click(object sender, RoutedEventArgs e)
         {
-            if (nom.Text != "Fournisseur")
+            if (string.IsNullOrEmpty(num.Text) == false)
             {
                 bool canSubmit = true;
                 int delay = 0;
@@ -252,7 +250,7 @@ namespace bdd_projet
                 DateTime dtDc = new DateTime();
 
                 bool valDc = false;
-                if (string.IsNullOrWhiteSpace(nom.Text) == true || int.TryParse(nom.Text, out int i) == true)
+                if (string.IsNullOrWhiteSpace(nom.Text) == true || int.TryParse(nom.Text, out int i) == true || nom.Text == "Invalid argument")
                 {
                     canSubmit = false;
                     nom.Text = "Invalid argument";
@@ -261,7 +259,7 @@ namespace bdd_projet
                     nom.Foreground = Brushes.Red;
                     nomDel = false;
                 }
-                if (string.IsNullOrWhiteSpace(desc.Text) || desc.Text=="Description")
+                if (string.IsNullOrWhiteSpace(desc.Text) || desc.Text == "Description" || desc.Text == "Invalid argument")
                 {
                     canSubmit = false;
                     desc.Text = "Invalid argument";
@@ -270,7 +268,7 @@ namespace bdd_projet
                     desc.Foreground = Brushes.Red;
                     descDel = false;
                 }
-                if (string.IsNullOrWhiteSpace(numfourn.Text) == true || numfourn.Text== "n° produit fournisseur")
+                if (string.IsNullOrWhiteSpace(numfourn.Text) == true || numfourn.Text == "n° produit fournisseur" || numfourn.Text == "Invalid argument")
                 {
                     canSubmit = false;
                     numfourn.Text = "Invalid argument";
@@ -308,7 +306,7 @@ namespace bdd_projet
                     dateIntro.Foreground = Brushes.Red;
                     introDel = false;
                 }
-                if (dateDisc.Text != "Date discontinuité" && string.IsNullOrWhiteSpace(dateDisc.Text) == false 
+                if (dateDisc.Text != "Date discontinuité" && string.IsNullOrWhiteSpace(dateDisc.Text) == false
                     && DateTime.TryParse(dateDisc.Text, out dtDc) == false)
                 {
                     canSubmit = false;
@@ -318,7 +316,7 @@ namespace bdd_projet
                     dateDisc.Foreground = Brushes.Red;
                     discDel = false;
                 }
-                if (dateDisc.Text != "Date discontinuité" && string.IsNullOrWhiteSpace(dateDisc.Text) == false)
+                if (dateDisc.Text != "Date discontinuité" && string.IsNullOrWhiteSpace(dateDisc.Text) == false && dateDisc.Text != "Invalid argument")
                 {
                     valDc = true;
                 }
@@ -326,7 +324,7 @@ namespace bdd_projet
                 {
                     string query = "update pieces set descr=@description, nomFourn=@nom, numProdCat=@numfourn, prix=@prix" +
                         ", dateIntro=@dtIn, dateDiscont=@dtDc, delaiAppr=@delai WHERE numPiece=@num";
-                    MySqlCommand command = maConnexion.CreateCommand();
+                    MySqlCommand command = MainWindow.maConnexion.CreateCommand();
                     command.CommandText = query;
                     command.Parameters.Add("@num", MySqlDbType.VarChar).Value = num.Text.ToUpper();
                     command.Parameters.Add("@description", MySqlDbType.VarChar).Value = GoodMaj(desc.Text);
@@ -356,17 +354,40 @@ namespace bdd_projet
                     command.Dispose();
                     if (numDel == true)
                     {
-                        frame.NavigationService.Navigate(new Pieces(frame, maConnexion));
+                        MainWindow.Accueil.NavigationService.Navigate(new Pieces());
                     }
                 }
+                if (canSubmit == false)
+                {
+                    ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(-10, 0, 0, 0), new Thickness(10, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 400));
+                    marginAn.EasingFunction = new BounceEase();
+
+                    MainWindow.Accueil.BeginAnimation(Control.MarginProperty, marginAn);
+                    Loading();
+                }
             }
+        }
+        DispatcherTimer timer = new DispatcherTimer();
+        private void timer_tick(object sender, EventArgs e)
+        {
+            timer.Stop();
+            ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(10, 0, 0, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 1));
+            marginAn.EasingFunction = new QuadraticEase();
+
+            MainWindow.Accueil.BeginAnimation(Control.MarginProperty, marginAn);
+        }
+        void Loading() //0 pour CreationVelo, 1 pour ModifVelo
+        {
+            timer.Tick += timer_tick;
+            timer.Interval = TimeSpan.FromSeconds(0.29);
+            timer.Start();
         }
 
         private void num_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (listeNum.Contains(num.Text.ToLower()))
             {
-                MySqlCommand command = maConnexion.CreateCommand();
+                MySqlCommand command = MainWindow.maConnexion.CreateCommand();
                 string request = "SELECT * FROM pieces WHERE numPiece=@num";
                 command.CommandText = request;
                 command.Parameters.Add("@num", MySqlDbType.VarChar).Value = num.Text;
@@ -442,6 +463,18 @@ namespace bdd_projet
                 FocusManager.SetFocusedElement(FocusManager.GetFocusScope(appro), null);
                 Keyboard.ClearFocus();
             }
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            ThicknessAnimation db = new ThicknessAnimation(new Thickness(0, 0, 750, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 800));
+            db.EasingFunction = new ExponentialEase();
+
+            DoubleAnimation doubleAnimation = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(1.2));
+            doubleAnimation.EasingFunction = new ExponentialEase();
+
+            MainWindow.Accueil.BeginAnimation(Control.MarginProperty, db);
+            MainWindow.Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
         }
     }
 }

@@ -13,13 +13,13 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MySql.Data.MySqlClient;
+using System.Windows.Media.Animation;
+using System.Windows.Threading;
 
 namespace bdd_projet
 {
     public partial class ModifVelo : Page
     {
-        private MySqlConnection maConnexion;
-        private Frame frame;
         private List<int> listeNum = new List<int> { };
 
         private bool numDel = false;
@@ -31,11 +31,9 @@ namespace bdd_projet
         private bool discDel = false;
         private bool unable = false;
 
-        public ModifVelo(MySqlConnection maConnexion, Frame frame, List<int> listeNum)
+        public ModifVelo(List<int> listeNum)
         {
             InitializeComponent();
-            this.maConnexion = maConnexion;
-            this.frame = frame;
             this.listeNum = listeNum;
             unable = true;
         }
@@ -207,6 +205,7 @@ namespace bdd_projet
             tb.IsEnabled = false;
             tb.Foreground = Brushes.DarkGray;
             tb.TextAlignment = TextAlignment.Center;
+            tb.BorderBrush = Brushes.DarkGray;
         }
         private void Reaccessible(TextBox tb)
         {
@@ -219,7 +218,7 @@ namespace bdd_projet
 
         private void Submit_Click(object sender, RoutedEventArgs e)
         {
-            if (nom.Text != "Nom du produit")
+            if (string.IsNullOrEmpty(num.Text) == false && int.TryParse(num.Text, out int v) == true)
             {
                 bool canSubmit = true;
                 int cost = 0;
@@ -228,7 +227,8 @@ namespace bdd_projet
 
                 bool valDc = false;
 
-                if (string.IsNullOrWhiteSpace(nom.Text) == true || int.TryParse(nom.Text, out int i) == true || nom.Text == "Nom du produit")
+                if (string.IsNullOrWhiteSpace(nom.Text) == true || int.TryParse(nom.Text, out int i) == true
+                    || nom.Text == "Nom du produit" || nom.Text == "Invalid argument")
                 {
                     canSubmit = false;
                     nom.Text = "Invalid argument";
@@ -256,7 +256,7 @@ namespace bdd_projet
                     prix.Foreground = Brushes.Red;
                     prixDel = false;
                 }
-                if (type.Text.ToUpper() != "VTT" && type.Text.ToLower() != "vélo de course" 
+                if (type.Text.ToUpper() != "VTT" && type.Text.ToLower() != "vélo de course"
                     && type.Text.ToLower() != "classique" && type.Text.ToUpper() != "BMX")
                 {
                     canSubmit = false;
@@ -275,7 +275,7 @@ namespace bdd_projet
                     dateIntro.Foreground = Brushes.Red;
                     introDel = false;
                 }
-                if (dateDisc.Text != "Date discontinuité" && string.IsNullOrWhiteSpace(dateDisc.Text) == false 
+                if (dateDisc.Text != "Date discontinuité" && string.IsNullOrWhiteSpace(dateDisc.Text) == false
                     && DateTime.TryParse(dateDisc.Text, out dtDc) == false)
                 {
                     canSubmit = false;
@@ -285,7 +285,7 @@ namespace bdd_projet
                     dateDisc.Foreground = Brushes.Red;
                     discDel = false;
                 }
-                if (dateDisc.Text != "Date discontinuité" && string.IsNullOrWhiteSpace(dateDisc.Text) == false)
+                if (dateDisc.Text != "Date discontinuité" && string.IsNullOrWhiteSpace(dateDisc.Text) == false && dateDisc.Text != "Invalid argument")
                 {
                     valDc = true;
                 }
@@ -293,7 +293,7 @@ namespace bdd_projet
                 {
                     string insertTable = "update velo set nom=@nom, grandeur=@grandeur, prix=@cost, type=@type" +
                         ", dateIntro=@dtIn, dateDiscont=@dtDc WHERE numProduit=@num";
-                    MySqlCommand command = maConnexion.CreateCommand();
+                    MySqlCommand command = MainWindow.maConnexion.CreateCommand();
                     command.CommandText = insertTable;
                     command.Parameters.Add("@num", MySqlDbType.Int32).Value = num.Text;
                     command.Parameters.Add("@nom", MySqlDbType.VarChar).Value = GoodMaj(nom.Text);
@@ -322,18 +322,42 @@ namespace bdd_projet
                     command.Dispose();
                     if (numDel == true)
                     {
-                        frame.NavigationService.Navigate(new Velo(frame, maConnexion));
+                        MainWindow.Accueil.NavigationService.Navigate(new Velo());
                     }
+                }
+                else
+                {
+                    ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(-10, 0, 0, 0), new Thickness(10, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 400));
+                    marginAn.EasingFunction = new BounceEase();
+
+                    MainWindow.Accueil.BeginAnimation(Control.MarginProperty, marginAn);
+                    Loading();
                 }
             }
         }
+        DispatcherTimer timer = new DispatcherTimer();
+        private void timer_tick(object sender, EventArgs e)
+        {
+            timer.Stop();
+            ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(10, 0, 0, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 1));
+            marginAn.EasingFunction = new QuadraticEase();
+
+            MainWindow.Accueil.BeginAnimation(Control.MarginProperty, marginAn);
+        }
+        void Loading() //0 pour CreationVelo, 1 pour ModifVelo
+        {
+            timer.Tick += timer_tick;
+            timer.Interval = TimeSpan.FromSeconds(0.29);
+            timer.Start();
+        }
+
 
         private void num_TextChanged(object sender, TextChangedEventArgs e)
         {
             int val = 0;
             if (int.TryParse(num.Text, out val) == true && listeNum.Contains(val))
             {
-                MySqlCommand command = maConnexion.CreateCommand();
+                MySqlCommand command = MainWindow.maConnexion.CreateCommand();
                 string request = "SELECT * FROM velo WHERE numProduit=@num";
                 command.CommandText = request;
                 command.Parameters.Add("@num", MySqlDbType.Int32).Value = val;
@@ -402,6 +426,18 @@ namespace bdd_projet
                 FocusManager.SetFocusedElement(FocusManager.GetFocusScope(dateDisc), null);
                 Keyboard.ClearFocus();
             }
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            ThicknessAnimation db = new ThicknessAnimation(new Thickness(0, 0, 750, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 800));
+            db.EasingFunction = new ExponentialEase();
+
+            DoubleAnimation doubleAnimation = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(1.2));
+            doubleAnimation.EasingFunction = new ExponentialEase();
+
+            MainWindow.Accueil.BeginAnimation(Control.MarginProperty, db);
+            MainWindow.Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
         }
     }
 }
