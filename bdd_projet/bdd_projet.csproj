@@ -67,9 +67,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Black.xaml.cs">
-      <DependentUpon>Black.xaml</DependentUpon>
-    </Compile>
     <Compile Include="CreationPiece.xaml.cs">
       <DependentUpon>CreationPiece.xaml</DependentUpon>
     </Compile>
@@ -82,16 +79,9 @@
     <Compile Include="Pieces.xaml.cs">
       <DependentUpon>Pieces.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Start.xaml.cs">
-      <DependentUpon>Start.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Velo.xaml.cs">
       <DependentUpon>Velo.xaml</DependentUpon>
     </Compile>
-    <Page Include="Black.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="CreationPiece.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -117,10 +107,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Pieces.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Start.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
