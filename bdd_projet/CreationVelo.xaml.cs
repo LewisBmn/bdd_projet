@@ -24,6 +24,7 @@ namespace bdd_projet
     /// </summary>
     public partial class CreationVelo : Page
     {
+        #region bool de focus
         private bool numDel = false;
         private bool nomDel = false;
         private bool grandeurDel = false;
@@ -31,11 +32,32 @@ namespace bdd_projet
         private bool typeDel = false;
         private bool introDel = false;
         private bool discDel = false;
+        private bool unable = false;
+        #endregion
 
-        public CreationVelo()
+        private List<int> listeNum = new List<int> { };
+        private int value = 0;
+
+        public CreationVelo(List<int> listeNum, int value) //value = 0 si creation, 1 si modification
         {
             InitializeComponent();
+            this.value = value;
+            if (value == 1)
+            {
+                nom.IsEnabled = false;
+                grandeur.IsEnabled = false;
+                prix.IsEnabled = false;
+                type.IsEnabled = false;
+                dateIntro.IsEnabled = false;
+                dateDisc.IsEnabled = false;
+                Submit.IsEnabled = false;
+            }
+            this.listeNum = listeNum;
+            unable = true;
+            num.Focus();
         }
+
+        #region GestionFocus
         private void num_GotFocus(object sender, RoutedEventArgs e)
         {
             if (numDel == false)
@@ -121,6 +143,86 @@ namespace bdd_projet
             }
         }
 
+        private void num_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(num.Text))
+            {
+                num.Text = "N° du produit";
+                num.Foreground = Brushes.DarkGray;
+                num.TextAlignment = TextAlignment.Left;
+                numDel = false;
+                num.BorderBrush = Brushes.DarkGray;
+            }
+        }
+
+        private void nom_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(nom.Text))
+            {
+                nom.Text = "Nom du produit";
+                nom.Foreground = Brushes.DarkGray;
+                nom.TextAlignment = TextAlignment.Left;
+                nomDel = false;
+                nom.BorderBrush = Brushes.DarkGray;
+            }
+        }
+
+        private void grandeur_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(grandeur.Text))
+            {
+                grandeur.Text = "Grandeur";
+                grandeur.Foreground = Brushes.DarkGray;
+                grandeur.TextAlignment = TextAlignment.Left;
+                grandeurDel = false;
+                grandeur.BorderBrush = Brushes.DarkGray;
+            }
+        }
+
+        private void prix_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(prix.Text))
+            {
+                prix.Text = "Prix";
+                prix.Foreground = Brushes.DarkGray;
+                prix.TextAlignment = TextAlignment.Left;
+                prixDel = false;
+                prix.BorderBrush = Brushes.DarkGray;
+            }
+        }
+
+        private void type_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(type.Text))
+            {
+                type.Text = "Type";
+                type.Foreground = Brushes.DarkGray;
+                type.TextAlignment = TextAlignment.Left;
+                typeDel = false;
+                type.BorderBrush = Brushes.DarkGray;
+            }
+        }
+
+        private void dateIntro_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(dateIntro.Text))
+            {
+                dateIntro.Text = "Date d'introduction";
+                dateIntro.Foreground = Brushes.DarkGray;
+                dateIntro.TextAlignment = TextAlignment.Left;
+                introDel = false;
+                dateIntro.BorderBrush = Brushes.DarkGray;
+            }
+        }
+        private void dateDisc_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(dateDisc.Text))
+            {
+                dateDisc.BorderBrush = Brushes.DarkGray;
+            }
+        }
+        #endregion
+
         private void Submit_Click(object sender, RoutedEventArgs e)
         {
             bool canSubmit = true;
@@ -202,7 +304,16 @@ namespace bdd_projet
             }
             if (canSubmit)
             {
-                string insertTable = "insert into velo values (@num, @nom, @grandeur, @cost, @type, @dtIn, @dtDc)";
+                string insertTable = "";
+                if (value == 0)
+                {
+                    insertTable = "insert into velo values (@num, @nom, @grandeur, @cost, @type, @dtIn, @dtDc)";
+                }
+                if (value == 1)
+                {
+                    insertTable = "update velo set nom=@nom, grandeur=@grandeur, prix=@cost, type=@type" +
+                       ", dateIntro=@dtIn, dateDiscont=@dtDc WHERE numProduit=@num";
+                }
                 MySqlCommand command = MainWindow.maConnexion.CreateCommand();
                 command.CommandText = insertTable;
                 command.Parameters.Add("@num", MySqlDbType.Int32).Value = val;
@@ -254,86 +365,20 @@ namespace bdd_projet
             }
         }
         DispatcherTimer timer = new DispatcherTimer();
-        private void timer_tick(object sender, EventArgs e)
+        void Loading()
         {
-            timer.Stop();
-            ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(10, 0, 0, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 1));
-            marginAn.EasingFunction = new QuadraticEase();
+            timer.Tick += new EventHandler(delegate (Object o, EventArgs a)
+            {
+                timer.Stop();
+                ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(10, 0, 0, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 1));
+                marginAn.EasingFunction = new QuadraticEase();
 
-            MainWindow.Accueil.BeginAnimation(Control.MarginProperty, marginAn);
-        }
-        void Loading() //0 pour CreationVelo, 1 pour ModifVelo
-        {
-            timer.Tick += timer_tick;
+                MainWindow.Accueil.BeginAnimation(Control.MarginProperty, marginAn);
+            });
             timer.Interval = TimeSpan.FromSeconds(0.29);
             timer.Start();
         }
 
-        private void num_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(num.Text))
-            {
-                num.Text = "N° du produit";
-                num.Foreground = Brushes.DarkGray;
-                num.TextAlignment = TextAlignment.Center;
-                numDel = false;
-            }
-        }
-
-        private void nom_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(nom.Text))
-            {
-                nom.Text = "Nom du produit";
-                nom.Foreground = Brushes.DarkGray;
-                nom.TextAlignment = TextAlignment.Center;
-                nomDel = false;
-            }
-        }
-
-        private void grandeur_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(grandeur.Text))
-            {
-                grandeur.Text = "Grandeur";
-                grandeur.Foreground = Brushes.DarkGray;
-                grandeur.TextAlignment = TextAlignment.Center;
-                grandeurDel = false;
-            }
-        }
-
-        private void prix_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(prix.Text))
-            {
-                prix.Text = "Prix";
-                prix.Foreground = Brushes.DarkGray;
-                prix.TextAlignment = TextAlignment.Center;
-                prixDel = false;
-            }
-        }
-
-        private void type_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(type.Text))
-            {
-                type.Text = "Type";
-                type.Foreground = Brushes.DarkGray;
-                type.TextAlignment = TextAlignment.Center;
-                typeDel = false;
-            }
-        }
-
-        private void dateIntro_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(dateIntro.Text))
-            {
-                dateIntro.Text = "Date d'introduction";
-                dateIntro.Foreground = Brushes.DarkGray;
-                dateIntro.TextAlignment = TextAlignment.Center;
-                introDel = false;
-            }
-        }
         private string GoodMaj(string str)
         {
             if (string.IsNullOrWhiteSpace(str))
@@ -345,6 +390,21 @@ namespace bdd_projet
                 return char.ToUpper(str[0]) + str.Substring(1);
             }
             return str.ToUpper();
+        }
+        private void Unaccessible(TextBox tb)
+        {
+            tb.IsEnabled = false;
+            tb.Foreground = Brushes.DarkGray;
+            tb.TextAlignment = TextAlignment.Left;
+            tb.BorderBrush = Brushes.DarkGray;
+        }
+        private void Reaccessible(TextBox tb)
+        {
+            tb.IsEnabled = true;
+            tb.FontSize = 12;
+            tb.TextAlignment = TextAlignment.Left;
+            tb.BorderBrush = Brushes.Black;
+            tb.Foreground = Brushes.Black;
         }
         private void KeyEnter(object sender, KeyEventArgs e)
         {
@@ -360,7 +420,6 @@ namespace bdd_projet
                 Keyboard.ClearFocus();
             }
         }
-
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             ThicknessAnimation db = new ThicknessAnimation(new Thickness(0, 0, 750, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 800));
@@ -371,6 +430,69 @@ namespace bdd_projet
 
             MainWindow.Accueil.BeginAnimation(Control.MarginProperty, db);
             MainWindow.Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
+        }
+        private void num_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (value == 1)
+            {
+                int val = 0;
+                if (int.TryParse(num.Text, out val) == true && listeNum.Contains(val))
+                {
+                    MySqlCommand command = MainWindow.maConnexion.CreateCommand();
+                    string request = "SELECT * FROM velo WHERE numProduit=@num";
+                    command.CommandText = request;
+                    command.Parameters.Add("@num", MySqlDbType.Int32).Value = val;
+                    MySqlDataReader reader = command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        nom.Text = reader.GetString(1);
+                        nomDel = true;
+                        Reaccessible(nom);
+                        grandeur.Text = reader.GetString(2);
+                        grandeurDel = true;
+                        Reaccessible(grandeur);
+                        prix.Text = reader.GetString(3);
+                        prixDel = true;
+                        Reaccessible(prix);
+                        type.Text = reader.GetString(4);
+                        typeDel = true;
+                        Reaccessible(type);
+                        dateIntro.Text = Convert.ToDateTime(reader.GetString(5)).ToString("yyyy-MM-dd");
+                        introDel = true;
+                        Reaccessible(dateIntro);
+                        if (reader.IsDBNull(6))
+                        {
+                            dateDisc.Text = "";
+                        }
+                        else
+                        {
+                            dateDisc.Text = Convert.ToDateTime(reader.GetString(6)).ToString("yyyy-MM-dd");
+                        }
+                        discDel = true;
+                        Reaccessible(dateDisc);
+                    }
+
+                    command.Dispose();
+                    Submit.IsEnabled = true;
+                }
+                else if (unable)
+                {
+                    Unaccessible(nom);
+                    nom.Text = "Nom du produit";
+                    Unaccessible(grandeur);
+                    grandeur.Text = "Grandeur";
+                    Unaccessible(prix);
+                    prix.Text = "Prix";
+                    Unaccessible(type);
+                    type.Text = "Type";
+                    Unaccessible(dateIntro);
+                    dateIntro.Text = "Date d'introduction";
+                    Unaccessible(dateDisc);
+                    dateDisc.Text = "Date discontinuité";
+                    Submit.IsEnabled = false;
+                }
+            }
         }
     }
 }

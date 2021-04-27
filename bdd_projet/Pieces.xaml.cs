@@ -29,63 +29,8 @@ namespace bdd_projet
             InitializeComponent();
         }
 
-        private void Pieces_Loaded(object sender, RoutedEventArgs e)
-        {
-            string query = "Select * from pieces";
-            MySqlCommand command = MainWindow.maConnexion.CreateCommand();
-            command.CommandText = query;
-
-            MySqlDataReader reader = command.ExecuteReader();
-            DataTable dt = new DataTable();
-            dt.Load(reader);
-            dataGrid1.ItemsSource = dt.DefaultView;
-
-            command.CommandText = "SELECT DISTINCT numPiece FROM pieces";
-            reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                listeNum.Add(reader.GetString(0).ToLower());
-            }
-            command.Dispose();
-
-            DoubleAnimation doubleAnimation = new DoubleAnimation(0, 1, new TimeSpan(0, 0, 0, 2, 0));
-            doubleAnimation.EasingFunction = new ExponentialEase();
-
-            ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(0, 20, 0, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 400));
-            marginAn.EasingFunction = new ExponentialEase();
-
-            MainWindow.Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
-            MainWindow.Accueil.BeginAnimation(Control.MarginProperty, marginAn);
-        }
-
-        DispatcherTimer timer = new DispatcherTimer();
-
-        private void timer_tick0(object sender, EventArgs e)
-        {
-            timer.Stop();
-            MainWindow.Accueil.NavigationService.Navigate(new CreationPiece());
-        }
-        private void timer_tick1(object sender, EventArgs e)
-        {
-            timer.Stop();
-            MainWindow.Accueil.NavigationService.Navigate(new ModifPiece(listeNum));
-        }
-        void Loading(int val) //0 pour CreationPiece, 1 pour ModifPiece
-        {
-            if (val == 0)
-            {
-                timer.Tick += timer_tick0;
-                timer.Interval = TimeSpan.FromSeconds(0.35);
-                timer.Start();
-            }
-            if (val == 1)
-            {
-                timer.Tick += timer_tick1;
-                timer.Interval = TimeSpan.FromSeconds(0.35);
-                timer.Start();
-            }
-        }
-        private void Creation_Click(object sender, RoutedEventArgs e)
+        #region Click and Focus
+        private void Click(int val)
         {
             ThicknessAnimation db = new ThicknessAnimation(new Thickness(0, 0, 0, 0), new Thickness(730, 0, 0, 0), new TimeSpan(0, 0, 0, 1, 0));
             db.EasingFunction = new ExponentialEase();
@@ -96,7 +41,15 @@ namespace bdd_projet
             MainWindow.Accueil.BeginAnimation(Control.MarginProperty, db);
             MainWindow.Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
 
-            Loading(0);
+            Loading(val);
+        }
+        private void Creation_Click(object sender, RoutedEventArgs e)
+        {
+            Click(0);
+        }
+        private void Modify_Click(object sender, RoutedEventArgs e)
+        {
+            Click(1);
         }
         private void Suppr_Click(object sender, RoutedEventArgs e)
         {
@@ -113,7 +66,6 @@ namespace bdd_projet
 
             Submission.BeginAnimation(Control.MarginProperty, marginAn);
         }
-
         private void del_Click(object sender, RoutedEventArgs e)
         {
             bool canSubmit = true;
@@ -162,7 +114,6 @@ namespace bdd_projet
                 }
             }
         }
-
         private void num_GotFocus(object sender, RoutedEventArgs e)
         {
             if (numDel == false)
@@ -175,7 +126,6 @@ namespace bdd_projet
                 num.Foreground = Brushes.Black;
             }
         }
-
         private void num_LostFocus(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(num.Text))
@@ -186,7 +136,6 @@ namespace bdd_projet
                 numDel = false;
             }
         }
-
         private void num_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Return)
@@ -194,19 +143,46 @@ namespace bdd_projet
                 del_Click(sender, e);
             }
         }
+        #endregion
 
-        private void Modify_Click(object sender, RoutedEventArgs e)
+        private void Pieces_Loaded(object sender, RoutedEventArgs e)
         {
-            ThicknessAnimation db = new ThicknessAnimation(new Thickness(0, 0, 0, 0), new Thickness(730, 0, 0, 0), new TimeSpan(0, 0, 0, 1, 0));
-            db.EasingFunction = new ExponentialEase();
+            string query = "Select * from pieces";
+            MySqlCommand command = MainWindow.maConnexion.CreateCommand();
+            command.CommandText = query;
 
-            DoubleAnimation doubleAnimation = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.35));
+            MySqlDataReader reader = command.ExecuteReader();
+            DataTable dt = new DataTable();
+            dt.Load(reader);
+            dataGrid1.ItemsSource = dt.DefaultView;
+
+            command.CommandText = "SELECT DISTINCT numPiece FROM pieces";
+            reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                listeNum.Add(reader.GetString(0).ToLower());
+            }
+            command.Dispose();
+
+            DoubleAnimation doubleAnimation = new DoubleAnimation(0, 1, new TimeSpan(0, 0, 0, 2, 0));
             doubleAnimation.EasingFunction = new ExponentialEase();
 
-            MainWindow.Accueil.BeginAnimation(Control.MarginProperty, db);
-            MainWindow.Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
+            ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(0, 20, 0, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 400));
+            marginAn.EasingFunction = new ExponentialEase();
 
-            Loading(1);
+            MainWindow.Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
+            MainWindow.Accueil.BeginAnimation(Control.MarginProperty, marginAn);
+        }
+        DispatcherTimer timer = new DispatcherTimer();
+        void Loading(int val) //0 pour CreationPiece, 1 pour ModifPiece
+        {
+            timer.Tick += new EventHandler(delegate (Object o, EventArgs a)
+            {
+                timer.Stop();
+                MainWindow.Accueil.NavigationService.Navigate(new CreationPiece(listeNum, val));
+            });
+            timer.Interval = TimeSpan.FromSeconds(0.35);
+            timer.Start();
         }
     }
 }

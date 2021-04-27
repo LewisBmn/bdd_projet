@@ -32,8 +32,8 @@ namespace bdd_projet
         {
             InitializeComponent();
         }
-
-        private void Creation_Click(object sender, RoutedEventArgs e)
+        #region Click and Focus
+        private void Click(int val)
         {
             ThicknessAnimation db = new ThicknessAnimation(new Thickness(0, 0, 0, 0), new Thickness(730, 0, 0, 0), new TimeSpan(0, 0, 0, 1, 0));
             db.EasingFunction = new ExponentialEase();
@@ -44,65 +44,16 @@ namespace bdd_projet
             MainWindow.Accueil.BeginAnimation(Control.MarginProperty, db);
             MainWindow.Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
 
-            Loading(0);
+            Loading(val);
         }
-
-        DispatcherTimer timer = new DispatcherTimer();
-
-        private void timer_tick0(object sender, EventArgs e)
+        private void Creation_Click(object sender, RoutedEventArgs e)
         {
-            timer.Stop();
-            MainWindow.Accueil.NavigationService.Navigate(new CreationVelo());
+            Click(0);
         }
-        private void timer_tick1(object sender, EventArgs e)
+        private void Modify_Click(object sender, RoutedEventArgs e)
         {
-            timer.Stop();
-            MainWindow.Accueil.NavigationService.Navigate(new ModifVelo(listeNum));
+            Click(1);
         }
-        void Loading(int val) //0 pour CreationVelo, 1 pour ModifVelo
-        {
-            if (val == 0)
-            {
-                timer.Tick += timer_tick0;
-                timer.Interval = TimeSpan.FromSeconds(0.35);
-                timer.Start();
-            }
-            if(val==1)
-            {
-                timer.Tick += timer_tick1;
-                timer.Interval = TimeSpan.FromSeconds(0.35);
-                timer.Start();
-            }
-        }
-        private void Velo_Loaded(object sender, RoutedEventArgs e)
-        {
-            string query = "Select * from velo";
-            MySqlCommand command = MainWindow.maConnexion.CreateCommand();
-            command.CommandText = query;
-
-            MySqlDataReader reader = command.ExecuteReader();
-            DataTable dt = new DataTable();
-            dt.Load(reader);
-            dataGrid1.ItemsSource = dt.DefaultView;
-
-            command.CommandText = "SELECT DISTINCT numProduit FROM velo";
-            reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                listeNum.Add(Int32.Parse(reader.GetString(0)));
-            }
-            command.Dispose();
-
-            DoubleAnimation doubleAnimation = new DoubleAnimation(0, 1, new TimeSpan(0, 0, 0, 2, 0));
-            doubleAnimation.EasingFunction = new ExponentialEase();
-
-            ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(0, 20, 0, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 400));
-            marginAn.EasingFunction = new ExponentialEase();
-
-            MainWindow.Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
-            MainWindow.Accueil.BeginAnimation(Control.MarginProperty, marginAn);
-        }
-
         private void Suppr_Click(object sender, RoutedEventArgs e)
         {
             num.IsEnabled = true;
@@ -118,7 +69,6 @@ namespace bdd_projet
 
             Submission.BeginAnimation(Control.MarginProperty, marginAn);
         }
-
         private void del_Click(object sender, RoutedEventArgs e)
         {
             bool canSubmit = true;
@@ -133,7 +83,7 @@ namespace bdd_projet
                 num.Foreground = Brushes.Red;
                 numDel = false;
             }
-            if(canSubmit)
+            if (canSubmit)
             {
                 string delTable = "DELETE FROM velo WHERE numProduit = @num";
 
@@ -151,7 +101,7 @@ namespace bdd_projet
                 }
 
                 command.Dispose();
-                if (listeNum.Contains(val)==false)
+                if (listeNum.Contains(val) == false)
                 {
                     num.Text = "Le n° doit exister";
                     num.FontSize = 10;
@@ -200,19 +150,46 @@ namespace bdd_projet
                 del_Click(sender, e);
             }
         }
+        #endregion
 
-        private void Modify_Click(object sender, RoutedEventArgs e)
+        DispatcherTimer timer = new DispatcherTimer();
+        void Loading(int val) //0 pour CreationVelo, 1 pour ModifVelo
         {
-            ThicknessAnimation db = new ThicknessAnimation(new Thickness(0, 0, 0, 0), new Thickness(730, 0, 0, 0), new TimeSpan(0, 0, 0, 1, 0));
-            db.EasingFunction = new ExponentialEase();
+            timer.Tick += new EventHandler(delegate (Object o, EventArgs a)
+            {
+                timer.Stop();
+                MainWindow.Accueil.NavigationService.Navigate(new CreationVelo(listeNum, val));
+            });
+            timer.Interval = TimeSpan.FromSeconds(0.35);
+            timer.Start();
+        }
+        private void Velo_Loaded(object sender, RoutedEventArgs e)
+        {
+            string query = "Select * from velo";
+            MySqlCommand command = MainWindow.maConnexion.CreateCommand();
+            command.CommandText = query;
 
-            DoubleAnimation doubleAnimation = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.35));
+            MySqlDataReader reader = command.ExecuteReader();
+            DataTable dt = new DataTable();
+            dt.Load(reader);
+            dataGrid1.ItemsSource = dt.DefaultView;
+
+            command.CommandText = "SELECT DISTINCT numProduit FROM velo";
+            reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                listeNum.Add(Int32.Parse(reader.GetString(0)));
+            }
+            command.Dispose();
+
+            DoubleAnimation doubleAnimation = new DoubleAnimation(0, 1, new TimeSpan(0, 0, 0, 2, 0));
             doubleAnimation.EasingFunction = new ExponentialEase();
 
-            MainWindow.Accueil.BeginAnimation(Control.MarginProperty, db);
-            MainWindow.Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
+            ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(0, 20, 0, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 400));
+            marginAn.EasingFunction = new ExponentialEase();
 
-            Loading(1);
+            MainWindow.Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
+            MainWindow.Accueil.BeginAnimation(Control.MarginProperty, marginAn);
         }
     }
 }

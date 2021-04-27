@@ -23,6 +23,7 @@ namespace bdd_projet
     /// </summary>
     public partial class CreationPiece : Page
     {
+        #region bools de focus
         bool numDel = false;
         bool nomDel = false;
         bool introDel = false;
@@ -31,13 +32,33 @@ namespace bdd_projet
         bool numfournDel = false;
         bool approDel = false;
         bool prixDel = false;
+        bool unable = false;
+        #endregion
 
-        public CreationPiece()
+        List<string> listeNum = new List<string> { };
+        int value = 0;
+
+        public CreationPiece(List<string> listeNum, int value) //value = 0 si creation, 1 si modification
         {
             InitializeComponent();
+            this.listeNum = listeNum;
+            this.value = value;
+            if (value == 1)
+            {
+                nom.IsEnabled = false;
+                dateIntro.IsEnabled = false;
+                dateDisc.IsEnabled = false;
+                desc.IsEnabled = false;
+                numfourn.IsEnabled = false;
+                appro.IsEnabled = false;
+                prix.IsEnabled = false;
+                Submit.IsEnabled = false;
+            }
+            unable = true;
+            num.Focus();
         }
 
-        #region GotFocus
+        #region GestionFocus
         private void num_GotFocus(object sender, RoutedEventArgs e)
         {
             if (numDel == false)
@@ -131,16 +152,15 @@ namespace bdd_projet
                 prix.Foreground = Brushes.Black;
             }
         }
-        #endregion
-        #region LostFocus
         private void num_LostFocus(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(num.Text))
             {
                 num.Text = "N° du produit";
                 num.Foreground = Brushes.DarkGray;
-                num.TextAlignment = TextAlignment.Center;
+                num.TextAlignment = TextAlignment.Left;
                 numDel = false;
+                num.BorderBrush = Brushes.DarkGray;
             }
         }
         private void desc_LostFocus(object sender, RoutedEventArgs e)
@@ -149,8 +169,9 @@ namespace bdd_projet
             {
                 desc.Text = "Description";
                 desc.Foreground = Brushes.DarkGray;
-                desc.TextAlignment = TextAlignment.Center;
+                desc.TextAlignment = TextAlignment.Left;
                 descDel = false;
+                desc.BorderBrush = Brushes.DarkGray;
             }
         }
         private void nom_LostFocus(object sender, RoutedEventArgs e)
@@ -159,8 +180,9 @@ namespace bdd_projet
             {
                 nom.Text = "Fournisseur";
                 nom.Foreground = Brushes.DarkGray;
-                nom.TextAlignment = TextAlignment.Center;
+                nom.TextAlignment = TextAlignment.Left;
                 nomDel = false;
+                nom.BorderBrush = Brushes.DarkGray;
             }
         }
         private void numfourn_LostFocus(object sender, RoutedEventArgs e)
@@ -168,10 +190,10 @@ namespace bdd_projet
             if (string.IsNullOrWhiteSpace(numfourn.Text))
             {
                 numfourn.Text = "n° produit fournisseur";
-                numfourn.FontSize = 11;
                 numfourn.Foreground = Brushes.DarkGray;
-                numfourn.TextAlignment = TextAlignment.Center;
+                numfourn.TextAlignment = TextAlignment.Left;
                 numfournDel = false;
+                numfourn.BorderBrush = Brushes.DarkGray;
             }
         }
         private void dateIntro_LostFocus(object sender, RoutedEventArgs e)
@@ -180,8 +202,9 @@ namespace bdd_projet
             {
                 dateIntro.Text = "Date d'introduction";
                 dateIntro.Foreground = Brushes.DarkGray;
-                dateIntro.TextAlignment = TextAlignment.Center;
+                dateIntro.TextAlignment = TextAlignment.Left;
                 introDel = false;
+                dateIntro.BorderBrush = Brushes.DarkGray;
             }
         }
         private void appro_LostFocus(object sender, RoutedEventArgs e)
@@ -189,10 +212,17 @@ namespace bdd_projet
             if (string.IsNullOrWhiteSpace(appro.Text))
             {
                 appro.Text = "Délai d'approvisionnement";
-                appro.FontSize = 9;
                 appro.Foreground = Brushes.DarkGray;
-                appro.TextAlignment = TextAlignment.Center;
+                appro.TextAlignment = TextAlignment.Left;
                 approDel = false;
+                appro.BorderBrush = Brushes.DarkGray;
+            }
+        }
+        private void dateDisc_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(dateDisc.Text))
+            {
+                dateDisc.BorderBrush = Brushes.DarkGray;
             }
         }
         private void prix_LostFocus(object sender, RoutedEventArgs e)
@@ -201,8 +231,9 @@ namespace bdd_projet
             {
                 prix.Text = "Prix";
                 prix.Foreground = Brushes.DarkGray;
-                prix.TextAlignment = TextAlignment.Center;
+                prix.TextAlignment = TextAlignment.Left;
                 prixDel = false;
+                prix.BorderBrush = Brushes.DarkGray;
             }
         }
         #endregion
@@ -299,7 +330,16 @@ namespace bdd_projet
             }
             if (canSubmit)
             {
-                string insertTable = "insert into pieces values (@num, @description, @nom, @numfourn, @prix, @dtIn, @dtDc, @delai)";
+                string insertTable = "";
+                if (value == 0)
+                {
+                    insertTable = "insert into pieces values (@num, @description, @nom, @numfourn, @prix, @dtIn, @dtDc, @delai)";
+                }
+                if (value == 1)
+                {
+                    insertTable = "update pieces set descr=@description, nomFourn=@nom, numProdCat=@numfourn, prix=@prix" +
+                        ", dateIntro=@dtIn, dateDiscont=@dtDc, delaiAppr=@delai WHERE numPiece=@num";
+                }
                 MySqlCommand command = MainWindow.maConnexion.CreateCommand();
                 command.CommandText = insertTable;
                 command.Parameters.Add("@num", MySqlDbType.VarChar).Value = num.Text.ToUpper();
@@ -352,17 +392,16 @@ namespace bdd_projet
         }
 
         DispatcherTimer timer = new DispatcherTimer();
-        private void timer_tick(object sender, EventArgs e)
+        void Loading()
         {
-            timer.Stop();
-            ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(10, 0, 0, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 1));
-            marginAn.EasingFunction = new QuadraticEase();
+            timer.Tick += new EventHandler(delegate (Object o, EventArgs a)
+            {
+                timer.Stop();
+                ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(10, 0, 0, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 1));
+                marginAn.EasingFunction = new QuadraticEase();
 
-            MainWindow.Accueil.BeginAnimation(Control.MarginProperty, marginAn);
-        }
-        void Loading() //0 pour CreationVelo, 1 pour ModifVelo
-        {
-            timer.Tick += timer_tick;
+                MainWindow.Accueil.BeginAnimation(Control.MarginProperty, marginAn);
+            });
             timer.Interval = TimeSpan.FromSeconds(0.29);
             timer.Start();
         }
@@ -377,6 +416,20 @@ namespace bdd_projet
                 return char.ToUpper(str[0]) + str.Substring(1);
             }
             return str.ToUpper();
+        }
+        private void Unaccessible(TextBox tb)
+        {
+            tb.IsEnabled = false;
+            tb.Foreground = Brushes.DarkGray;
+            tb.TextAlignment = TextAlignment.Left;
+        }
+        private void Reaccessible(TextBox tb)
+        {
+            tb.IsEnabled = true;
+            tb.FontSize = 12;
+            tb.TextAlignment = TextAlignment.Left;
+            tb.BorderBrush = Brushes.Black;
+            tb.Foreground = Brushes.Black;
         }
         private void KeyEnter(object sender, KeyEventArgs e)
         {
@@ -393,7 +446,6 @@ namespace bdd_projet
                 Keyboard.ClearFocus();
             }
         }
-
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             ThicknessAnimation db = new ThicknessAnimation(new Thickness(0, 0, 750, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 800));
@@ -404,6 +456,73 @@ namespace bdd_projet
 
             MainWindow.Accueil.BeginAnimation(Control.MarginProperty, db);
             MainWindow.Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
+        }
+        private void num_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (value == 1)
+            {
+                if (listeNum.Contains(num.Text.ToLower()))
+                {
+                    MySqlCommand command = MainWindow.maConnexion.CreateCommand();
+                    string request = "SELECT * FROM pieces WHERE numPiece=@num";
+                    command.CommandText = request;
+                    command.Parameters.Add("@num", MySqlDbType.VarChar).Value = num.Text;
+                    MySqlDataReader reader = command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        desc.Text = reader.GetString(1);
+                        descDel = true;
+                        Reaccessible(desc);
+                        nom.Text = reader.GetString(2);
+                        nomDel = true;
+                        Reaccessible(nom);
+                        numfourn.Text = reader.GetString(3);
+                        numfournDel = true;
+                        Reaccessible(numfourn);
+                        prix.Text = reader.GetString(4);
+                        prixDel = true;
+                        Reaccessible(prix);
+                        dateIntro.Text = Convert.ToDateTime(reader.GetString(5)).ToString("yyyy-MM-dd");
+                        introDel = true;
+                        Reaccessible(dateIntro);
+                        if (reader.IsDBNull(6))
+                        {
+                            dateDisc.Text = "";
+                        }
+                        else
+                        {
+                            dateDisc.Text = Convert.ToDateTime(reader.GetString(6)).ToString("yyyy-MM-dd");
+                        }
+                        discDel = true;
+                        Reaccessible(dateDisc);
+                        appro.Text = reader.GetString(7);
+                        approDel = true;
+                        Reaccessible(appro);
+                    }
+
+                    command.Dispose();
+                    Submit.IsEnabled = true;
+                }
+                else if (unable)
+                {
+                    Unaccessible(desc);
+                    desc.Text = "Description";
+                    Unaccessible(nom);
+                    nom.Text = "Fournisseur";
+                    Unaccessible(numfourn);
+                    numfourn.Text = "n° produit fournisseur";
+                    Unaccessible(prix);
+                    prix.Text = "Prix";
+                    Unaccessible(dateIntro);
+                    dateIntro.Text = "Date d'introduction";
+                    Unaccessible(dateDisc);
+                    dateDisc.Text = "Date discontinuité";
+                    Unaccessible(appro);
+                    appro.Text = "Délai d'approvisionnement";
+                    Submit.IsEnabled = false;
+                }
+            }
         }
     }
 }
