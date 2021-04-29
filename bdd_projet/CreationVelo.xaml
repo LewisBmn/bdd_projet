@@ -110,45 +110,50 @@
 
     <Grid>
         <StackPanel>
-            <TextBox x:Name="num" Text="N° du produit" Height="25" Width="290" TextAlignment="Left" KeyDown="KeyEnter" Padding="7,2.5,0,0"
+            <Grid x:Name="form" Height="370">
+                <StackPanel>
+                    <TextBox x:Name="num" Text="N° du produit" Height="25" Width="290" TextAlignment="Left" KeyDown="KeyEnter" Padding="7,2.5,0,0"
                      HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,50,0,0" GotFocus="num_GotFocus"
                      Foreground="DarkGray" LostFocus="num_LostFocus" Style="{DynamicResource TextBoxStyle}" TextChanged="num_TextChanged"/>
 
-            <TextBox x:Name="nom" Text="Nom du produit" Height="25" Width="290" TextAlignment="Left" Style="{DynamicResource TextBoxStyle}"
+                    <TextBox x:Name="nom" Text="Nom du produit" Height="25" Width="290" TextAlignment="Left" Style="{DynamicResource TextBoxStyle}"
                      HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0" GotFocus="nom_GotFocus"
                      Foreground="DarkGray" LostFocus="nom_LostFocus" KeyDown="KeyEnter" Padding="7,2.5,0,0"/>
 
-            <TextBox x:Name="grandeur" Text="Grandeur" Height="25" Width="290" TextAlignment="Left" Style="{DynamicResource TextBoxStyle}"
+                    <TextBox x:Name="grandeur" Text="Grandeur" Height="25" Width="290" TextAlignment="Left" Style="{DynamicResource TextBoxStyle}"
                      HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0" GotFocus="grandeur_GotFocus"
                      Foreground="DarkGray" LostFocus="grandeur_LostFocus" KeyDown="KeyEnter" Padding="7,2.5,0,0"/>
 
-            <TextBlock Text="De la forme Adultes / Jeunes / Hommes / Dames / Filles / Garçons" HorizontalAlignment="Center" FontSize="10"/>
+                    <TextBlock Text="De la forme Adultes / Jeunes / Hommes / Dames / Filles / Garçons" HorizontalAlignment="Center" FontSize="10"/>
 
-            <TextBox x:Name="prix" Text="Prix" Height="25" Width="290" TextAlignment="Left" Style="{DynamicResource TextBoxStyle}"
+                    <TextBox x:Name="prix" Text="Prix" Height="25" Width="290" TextAlignment="Left" Style="{DynamicResource TextBoxStyle}"
                      HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,8,0,0" GotFocus="prix_GotFocus" Padding="7,2.5,0,0"
                      Foreground="DarkGray" LostFocus="prix_LostFocus" KeyDown="KeyEnter"/>
 
-            <TextBox x:Name="type" Text="Type" Height="25" Width="290" TextAlignment="Left" Style="{DynamicResource TextBoxStyle}"
+                    <TextBox x:Name="type" Text="Type" Height="25" Width="290" TextAlignment="Left" Style="{DynamicResource TextBoxStyle}"
                      HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0" GotFocus="type_GotFocus" Padding="7,2.5,0,0" 
                      Foreground="DarkGray" LostFocus="type_LostFocus" KeyDown="KeyEnter"/>
 
-            <TextBlock Text="De la forme VTT / Vélo de course / Classique / BMX" HorizontalAlignment="Center" FontSize="10" Margin="0,0,65,0"/>
+                    <TextBlock Text="De la forme VTT / Vélo de course / Classique / BMX" HorizontalAlignment="Center" FontSize="10" Margin="0,0,65,0"/>
 
-            <TextBox x:Name="dateIntro" Text="Date d'introduction" Height="25" Width="290" TextAlignment="Left" KeyDown="KeyEnter"
+                    <TextBox x:Name="dateIntro" Text="Date d'introduction" Height="25" Width="290" TextAlignment="Left" KeyDown="KeyEnter"
                      HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,8,0,0" GotFocus="dateIntro_GotFocus" Padding="7,2.5,0,0"
-                     Foreground="DarkGray" LostFocus="dateIntro_LostFocus" Style="{DynamicResource TextBoxStyle}"/> 
+                     Foreground="DarkGray" LostFocus="dateIntro_LostFocus" Style="{DynamicResource TextBoxStyle}"/>
 
-            <TextBlock Text="Les dates doivent être au format yyyy-mm-dd" HorizontalAlignment="Center" FontSize="10" Margin="0,0,90,0"/>
+                    <TextBlock Text="Les dates doivent être au format yyyy-mm-dd" HorizontalAlignment="Center" FontSize="10" Margin="0,0,90,0"/>
 
-            <TextBox x:Name="dateDisc" Text="Date discontinuité" Height="25" Width="290" TextAlignment="Left" KeyDown="KeyEnter"
+                    <TextBox x:Name="dateDisc" Text="Date discontinuité" Height="25" Width="290" TextAlignment="Left" KeyDown="KeyEnter"
                      HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,8,0,0" GotFocus="dateDisc_GotFocus" Padding="7,2.5,0,0"
                      Foreground="DarkGray" Style="{DynamicResource TextBoxStyle}" LostFocus="dateDisc_LostFocus"/>
 
-            <TextBlock Text="Laisser vide si toujours en production" HorizontalAlignment="Center" FontSize="10" Margin="0,0,125,0"/>
-
-            <Button x:Name="Submit" Content="SUBMIT" Width="140" Height="40" FontFamily="Trebuchet MS" FontSize ="18"
-                    VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,21,50,0" Click="Submit_Click"
+                    <TextBlock Text="Laisser vide si toujours en production" HorizontalAlignment="Center" FontSize="10" Margin="0,0,125,0"/>
+                </StackPanel>
+            </Grid>
+            <Grid x:Name="Bouton">
+                <Button x:Name="Submit" Content="Soumettre" Width="140" Height="40" FontFamily="Trebuchet MS" FontSize ="18"
+                    VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,-8,50,0" Click="Submit_Click"
                     Cursor="Hand" Style="{DynamicResource SubmitButtonStyle}" BorderBrush="Transparent"/>
+            </Grid>
         </StackPanel>
     </Grid>
 </Page>

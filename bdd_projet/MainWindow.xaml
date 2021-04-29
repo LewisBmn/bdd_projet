@@ -193,7 +193,7 @@
         <WindowChrome CaptionHeight="25"/>
     </WindowChrome.WindowChrome>
     <Grid x:Name="Global" Background="#F0F0F0">
-        <Grid VerticalAlignment="Top" Background="LightGray" x:Name="Barre" Opacity="0">
+        <Grid VerticalAlignment="Top" Background="LightGray" x:Name="Barre">
             <StackPanel Height="25" WindowChrome.IsHitTestVisibleInChrome="True" VerticalAlignment="Center"
                         HorizontalAlignment="Right" Orientation="Horizontal">
                 <Button BorderBrush="Transparent" Width="25" 
@@ -212,7 +212,7 @@
                 </Button>
             </StackPanel>
         </Grid>
-        <Grid x:Name="Loader" Opacity="0">
+        <Grid x:Name="Loader">
             <Grid x:Name="NavPanel" HorizontalAlignment="Left" Width="70" 
               Background="#397545" Margin="0,25,0,0" Panel.ZIndex="1">
                 <StackPanel>
@@ -232,7 +232,7 @@
                                                          Storyboard.TargetProperty="Width"
                                                          BeginTime="0:0:0"
                                                          From="180" To="70"
-                                                         Duration="0:0:0.2"/>
+                                                         Duration="0:0:0.18"/>
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </EventTrigger>
@@ -243,7 +243,7 @@
                                                          Storyboard.TargetProperty="Width"
                                                          BeginTime="0:0:0"
                                                          From="70" To="180"
-                                                         Duration="0:0:0.25"/>
+                                                         Duration="0:0:0.23"/>
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </EventTrigger>
@@ -423,27 +423,14 @@
                     </ListView>
                 </StackPanel>
             </Grid>
-            <Grid x:Name="Black" Background="#F0F0F0" Height="425" Width="730" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                <Frame x:Name="AccueilW" 
+            <Grid x:Name="Black" Background="#F0F0F0" Height="425" Width="730" 
+                  HorizontalAlignment="Right" 
+                  VerticalAlignment="Bottom"
+                  Opacity="0">
+                <Frame x:Name="AccueilW"
                    NavigationUIVisibility="Hidden" Background="#F0F0F0" 
                    PreviewMouseLeftButtonDown="Accueil_PreviwMouseLeftButtonDown" />
             </Grid>
-        </Grid>
-        <Grid x:Name="Start" Panel.ZIndex="1" Background="#F0F0F0" Opacity="0" >
-            <TextBlock FontFamily="Trebuchet MS"
-                   FontSize="20"
-                   Margin="0,0,0,10"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center">
-            Souhail Ait Lahcen, Achirafi Ahmed et Lewis Baumann
-            </TextBlock>
-            <TextBlock FontFamily="Trebuchet MS"
-                   FontSize="20"
-                   Margin="0,35,0,0"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center">
-            vous présentent
-            </TextBlock>
         </Grid>
     </Grid>
 </Window>

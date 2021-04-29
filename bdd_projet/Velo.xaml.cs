@@ -33,7 +33,7 @@ namespace bdd_projet
             InitializeComponent();
         }
         #region Click and Focus
-        private void Click(int val)
+        private void Click()
         {
             ThicknessAnimation db = new ThicknessAnimation(new Thickness(0, 0, 0, 0), new Thickness(730, 0, 0, 0), new TimeSpan(0, 0, 0, 1, 0));
             db.EasingFunction = new ExponentialEase();
@@ -43,16 +43,28 @@ namespace bdd_projet
 
             MainWindow.Accueil.BeginAnimation(Control.MarginProperty, db);
             MainWindow.Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
-
-            Loading(val);
         }
         private void Creation_Click(object sender, RoutedEventArgs e)
         {
-            Click(0);
+            Click();
+            timer.Tick += new EventHandler(delegate (Object o, EventArgs a)
+            {
+                timer.Stop();
+                MainWindow.Accueil.NavigationService.Navigate(new CreationVelo(listeNum, 0));
+            });
+            timer.Interval = TimeSpan.FromSeconds(0.35);
+            timer.Start();
         }
         private void Modify_Click(object sender, RoutedEventArgs e)
         {
-            Click(1);
+            Click();
+            timer.Tick += new EventHandler(delegate (Object o, EventArgs a)
+            {
+                timer.Stop();
+                MainWindow.Accueil.NavigationService.Navigate(new CreationVelo(listeNum, 1));
+            });
+            timer.Interval = TimeSpan.FromSeconds(0.35);
+            timer.Start();
         }
         private void Suppr_Click(object sender, RoutedEventArgs e)
         {
@@ -66,8 +78,12 @@ namespace bdd_projet
             ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(-220, 0, 0, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 500));
             marginAn.EasingFunction = new QuadraticEase();
 
+            DoubleAnimation doubleAnimation = new DoubleAnimation(0, 1, new TimeSpan(0, 0, 0, 0, 500));
+            ExponentialEase be = new ExponentialEase(); be.EasingMode = EasingMode.EaseIn;
+            doubleAnimation.EasingFunction = be;
 
             Submission.BeginAnimation(Control.MarginProperty, marginAn);
+            Submission.BeginAnimation(Control.OpacityProperty, doubleAnimation);
         }
         private void del_Click(object sender, RoutedEventArgs e)
         {
@@ -153,16 +169,6 @@ namespace bdd_projet
         #endregion
 
         DispatcherTimer timer = new DispatcherTimer();
-        void Loading(int val) //0 pour CreationVelo, 1 pour ModifVelo
-        {
-            timer.Tick += new EventHandler(delegate (Object o, EventArgs a)
-            {
-                timer.Stop();
-                MainWindow.Accueil.NavigationService.Navigate(new CreationVelo(listeNum, val));
-            });
-            timer.Interval = TimeSpan.FromSeconds(0.35);
-            timer.Start();
-        }
         private void Velo_Loaded(object sender, RoutedEventArgs e)
         {
             string query = "Select * from velo";

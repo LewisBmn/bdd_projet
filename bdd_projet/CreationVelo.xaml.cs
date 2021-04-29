@@ -44,6 +44,7 @@ namespace bdd_projet
             this.value = value;
             if (value == 1)
             {
+                num.Text = "N° du produit à modifier";
                 nom.IsEnabled = false;
                 grandeur.IsEnabled = false;
                 prix.IsEnabled = false;
@@ -147,7 +148,14 @@ namespace bdd_projet
         {
             if (string.IsNullOrWhiteSpace(num.Text))
             {
-                num.Text = "N° du produit";
+                if (value == 0)
+                {
+                    num.Text = "N° du produit";
+                }
+                if (value == 1)
+                {
+                    num.Text = "N° du produit à modifier";
+                }
                 num.Foreground = Brushes.DarkGray;
                 num.TextAlignment = TextAlignment.Left;
                 numDel = false;
@@ -236,17 +244,17 @@ namespace bdd_projet
             if (string.IsNullOrWhiteSpace(num.Text) == true || int.TryParse(num.Text, out val) == false)
             {
                 canSubmit = false;
-                num.Text = "Invalid argument";
+                num.Text = "Argument invalide";
                 num.TextAlignment = TextAlignment.Center;
                 num.BorderBrush = Brushes.Red;
                 num.Foreground = Brushes.Red;
                 numDel = false;
             }
             if (string.IsNullOrWhiteSpace(nom.Text) == true || int.TryParse(nom.Text, out int i) == true
-                || nom.Text == "Nom du produit" || nom.Text == "Invalid argument")
+                || nom.Text == "Nom du produit" || nom.Text == "Argument invalide")
             {
                 canSubmit = false;
-                nom.Text = "Invalid argument";
+                nom.Text = "Argument invalide";
                 nom.TextAlignment = TextAlignment.Center;
                 nom.BorderBrush = Brushes.Red;
                 nom.Foreground = Brushes.Red;
@@ -256,7 +264,7 @@ namespace bdd_projet
                && grandeur.Text.ToLower() != "dames" && grandeur.Text.ToLower() != "filles" && grandeur.Text.ToLower() != "garçons")
             {
                 canSubmit = false;
-                grandeur.Text = "Invalid argument";
+                grandeur.Text = "Argument invalide";
                 grandeur.TextAlignment = TextAlignment.Center;
                 grandeur.BorderBrush = Brushes.Red;
                 grandeur.Foreground = Brushes.Red;
@@ -265,7 +273,7 @@ namespace bdd_projet
             if (int.TryParse(prix.Text, out cost) == false || cost < 0)
             {
                 canSubmit = false;
-                prix.Text = "Invalid argument";
+                prix.Text = "Argument invalide";
                 prix.TextAlignment = TextAlignment.Center;
                 prix.BorderBrush = Brushes.Red;
                 prix.Foreground = Brushes.Red;
@@ -274,7 +282,7 @@ namespace bdd_projet
             if (type.Text.ToUpper() != "VTT" && type.Text.ToLower() != "vélo de course" && type.Text.ToLower() != "classique" && type.Text.ToUpper() != "BMX")
             {
                 canSubmit = false;
-                type.Text = "Invalid argument";
+                type.Text = "Argument invalide";
                 type.TextAlignment = TextAlignment.Center;
                 type.BorderBrush = Brushes.Red;
                 type.Foreground = Brushes.Red;
@@ -283,7 +291,7 @@ namespace bdd_projet
             if (DateTime.TryParse(dateIntro.Text, out dtIn) == false)
             {
                 canSubmit = false;
-                dateIntro.Text = "Invalid argument";
+                dateIntro.Text = "Argument invalide";
                 dateIntro.TextAlignment = TextAlignment.Center;
                 dateIntro.BorderBrush = Brushes.Red;
                 dateIntro.Foreground = Brushes.Red;
@@ -292,13 +300,13 @@ namespace bdd_projet
             if (dateDisc.Text != "Date discontinuité" && string.IsNullOrWhiteSpace(dateDisc.Text) == false && DateTime.TryParse(dateDisc.Text, out dtDc) == false)
             {
                 canSubmit = false;
-                dateDisc.Text = "Invalid argument";
+                dateDisc.Text = "Argument invalide";
                 dateDisc.TextAlignment = TextAlignment.Center;
                 dateDisc.BorderBrush = Brushes.Red;
                 dateDisc.Foreground = Brushes.Red;
                 discDel = false;
             }
-            if (dateDisc.Text != "Date discontinuité" && string.IsNullOrWhiteSpace(dateDisc.Text) == false && dateDisc.Text != "Invalid argument")
+            if (dateDisc.Text != "Date discontinuité" && string.IsNullOrWhiteSpace(dateDisc.Text) == false && dateDisc.Text != "Argument invalide")
             {
                 valDc = true;
             }
@@ -340,7 +348,6 @@ namespace bdd_projet
                     if (er.Code == 0)
                     {
                         num.Text = "Le n° doit être unique";
-                        num.FontSize = 10;
                         num.TextAlignment = TextAlignment.Center;
                         num.BorderBrush = Brushes.Red;
                         num.Foreground = Brushes.Red;
@@ -361,23 +368,20 @@ namespace bdd_projet
                 marginAn.EasingFunction = new BounceEase();
 
                 MainWindow.Accueil.BeginAnimation(Control.MarginProperty, marginAn);
-                Loading();
+                timer.Tick += new EventHandler(delegate (Object o, EventArgs a)
+                {
+                    timer.Stop();
+                    ThicknessAnimation margin = new ThicknessAnimation(new Thickness(10, 0, 0, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 1));
+                    margin.EasingFunction = new QuadraticEase();
+
+                    MainWindow.Accueil.BeginAnimation(Control.MarginProperty, margin);
+                });
+                timer.Interval = TimeSpan.FromSeconds(0.29);
+                timer.Start();
             }
         }
-        DispatcherTimer timer = new DispatcherTimer();
-        void Loading()
-        {
-            timer.Tick += new EventHandler(delegate (Object o, EventArgs a)
-            {
-                timer.Stop();
-                ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(10, 0, 0, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 1));
-                marginAn.EasingFunction = new QuadraticEase();
 
-                MainWindow.Accueil.BeginAnimation(Control.MarginProperty, marginAn);
-            });
-            timer.Interval = TimeSpan.FromSeconds(0.29);
-            timer.Start();
-        }
+        DispatcherTimer timer = new DispatcherTimer();
 
         private string GoodMaj(string str)
         {
@@ -422,13 +426,18 @@ namespace bdd_projet
         }
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(10, 0, 0, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 1));
+            marginAn.EasingFunction = new QuadraticEase();
+
+            MainWindow.Accueil.BeginAnimation(Control.MarginProperty, marginAn);
+
             ThicknessAnimation db = new ThicknessAnimation(new Thickness(0, 0, 750, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 800));
             db.EasingFunction = new ExponentialEase();
 
-            DoubleAnimation doubleAnimation = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(1.2));
+            DoubleAnimation doubleAnimation = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(4));
             doubleAnimation.EasingFunction = new ExponentialEase();
 
-            MainWindow.Accueil.BeginAnimation(Control.MarginProperty, db);
+            form.BeginAnimation(Control.MarginProperty, db);
             MainWindow.Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
         }
         private void num_TextChanged(object sender, TextChangedEventArgs e)

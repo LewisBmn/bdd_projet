@@ -111,13 +111,18 @@
             <Button x:Name="Suppr" Content="Suppression" FontFamily="Trebuchet MS" FontSize ="18" Panel.ZIndex="1"
                     HorizontalAlignment="Center" VerticalAlignment="Top" Width="140" Height="40" Margin="10,20,0,0"
                     Cursor="Hand" Click="Suppr_Click" BorderBrush="Transparent" Style="{DynamicResource ButtonStyle}"/>
-            
+
             <Grid x:Name="Submission" Opacity="0">
                 <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Height="100" VerticalAlignment="Top">
-                    <TextBox x:Name="num" Text="N° du produit" Height="20" Width="110" TextAlignment="Center"
-                     HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="DarkGray" Margin="80, 30, 0 0"
+                    <StackPanel Orientation="Vertical">
+                        <TextBox x:Name="num" Text="N° du produit" Height="20" Width="110" TextAlignment="Center"
+                     HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="DarkGray" Margin="80, 10, 0 0"
                      IsEnabled="False" GotFocus="num_GotFocus" LostFocus="num_LostFocus"
                      KeyDown="num_KeyDown"/>
+                        <TextBox x:Name="siret" Text="Siret" Height="20" Width="110" TextAlignment="Center"
+                     HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="DarkGray" Margin="80, 15, 0 0"
+                     IsEnabled="False" GotFocus="siret_GotFocus" LostFocus="siret_LostFocus" KeyDown="siret_KeyDown"/>
+                    </StackPanel>
 
                     <Button x:Name="del" FontSize="12" BorderBrush="Transparent"
                     HorizontalAlignment="Center" VerticalAlignment="Top" Width="30" Height="30" Margin="5,25,0,0"

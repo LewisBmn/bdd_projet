@@ -25,7 +25,6 @@ namespace bdd_projet
     {
         public static MySqlConnection maConnexion;
         public static Frame Accueil;
-        bool firstTime = true;
 
         public MainWindow()
         {
@@ -35,18 +34,22 @@ namespace bdd_projet
             CloseButton.Click += (s, e) => Close();
 
             Accueil = AccueilW;
-            Accueil.NavigationService.Navigate(new Home());
 
-            Loader.Visibility = Visibility.Hidden;
-            Barre.Visibility = Visibility.Hidden;
+            timer.Tick += new EventHandler(delegate (Object o, EventArgs a)
+            {
+                timer.Stop();
+                Accueil.Visibility = Visibility.Visible;
 
-            DoubleAnimation db = new DoubleAnimation(0, 450, TimeSpan.FromSeconds(2));
-            CubicEase ease = new CubicEase();
-            ease.EasingMode = EasingMode.EaseOut;
-            db.EasingFunction = ease;
+                Accueil.NavigationService.Navigate(new Home());
+                TglButton.IsChecked = false;
 
-            this.BeginAnimation(Control.HeightProperty, db);
-            Loading(-1);
+                DoubleAnimation doubleAnimation = new DoubleAnimation(0, 1, new TimeSpan(0, 0, 0, 1, 800));
+                doubleAnimation.EasingFunction = new ExponentialEase();
+
+                Black.BeginAnimation(Control.OpacityProperty, doubleAnimation);
+            });
+            timer.Interval = TimeSpan.FromSeconds(0.15);
+            timer.Start();
 
             try
             {
@@ -65,73 +68,11 @@ namespace bdd_projet
         }
 
         DispatcherTimer timer = new DispatcherTimer();
-        DispatcherTimer timer2 = new DispatcherTimer();
 
         #region Click/Transitions
-        void Loading(int val) //1 = vélo ; 0 = home ; 2 = pieces ; -1 = start ; -2 affichage après start
+        void Loading(int val) //1 = vélo ; 0 = home ; 2 = pieces ; -1 = start
         {
-            if (val == -2)
-            {
-                timer.Tick += new EventHandler(delegate (Object o, EventArgs a)
-                {
-                    timer.Stop();
-                    if (firstTime)
-                    {
-                        firstTime = false;
-                        Start.Visibility = Visibility.Collapsed;
-
-                        DoubleAnimation doubleAnimation = new DoubleAnimation(0, 1, new TimeSpan(0, 0, 0, 1, 2));
-                        doubleAnimation.EasingFunction = new ExponentialEase();
-
-                        ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(0, 300, 0, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 1, 0));
-                        marginAn.EasingFunction = new ExponentialEase();
-
-                        Loader.BeginAnimation(Control.OpacityProperty, doubleAnimation);
-                        Barre.BeginAnimation(Control.OpacityProperty, doubleAnimation);
-                        Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
-
-                        Barre.BeginAnimation(Control.MarginProperty, marginAn);
-                        Loader.BeginAnimation(Control.MarginProperty, marginAn);
-                        Accueil.BeginAnimation(Control.MarginProperty, marginAn);
-                    }
-                });
-                timer.Interval = TimeSpan.FromSeconds(0.300);
-                timer.Start();
-            }
-            else if (val == -1)
-            {
-                timer.Tick += new EventHandler(delegate (Object o, EventArgs a)
-                {
-                    timer.Stop();
-                    DoubleAnimation db = new DoubleAnimation(0, 1, new TimeSpan(0, 0, 0, 1, 0));
-                    db.EasingFunction = new ExponentialEase();
-
-                    Start.BeginAnimation(Control.OpacityProperty, db);
-                });
-                timer.Interval = TimeSpan.FromSeconds(0.4);
-                timer.Start();
-
-                timer2.Tick += new EventHandler(delegate (Object o, EventArgs a)
-                {
-                    timer2.Stop();
-                    DoubleAnimation doubleAnimation = new DoubleAnimation(1, 0, new TimeSpan(0, 0, 0, 0, 200));
-                    doubleAnimation.EasingFunction = new ExponentialEase();
-
-                    ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(0, 0, 0, 0), new Thickness(0, 0, 0, 400), new TimeSpan(0, 0, 0, 1, 0));
-                    marginAn.EasingFunction = new ExponentialEase();
-
-                    Start.BeginAnimation(Control.OpacityProperty, doubleAnimation);
-                    Start.BeginAnimation(Control.MarginProperty, marginAn);
-
-                    Loader.Visibility = Visibility.Visible;
-                    Barre.Visibility = Visibility.Visible;
-
-                    Loading(-2);
-                });
-                timer2.Interval = TimeSpan.FromSeconds(3);
-                timer2.Start();
-            }
-            else if (val == 0)
+            if (val == 0)
             {
                 timer.Tick += new EventHandler(delegate (Object o, EventArgs a)
                 {
@@ -153,27 +94,15 @@ namespace bdd_projet
                 timer.Interval = TimeSpan.FromSeconds(0.15);
                 timer.Start();
             }
-            else if (val == 1)
+            else
             {
                 timer.Tick += new EventHandler(delegate (Object o, EventArgs a)
                 {
                     timer.Stop();
                     Accueil.Visibility = Visibility.Visible;
 
-                    Accueil.NavigationService.Navigate(new Velo());
-                    TglButton.IsChecked = false;
-                });
-                timer.Interval = TimeSpan.FromSeconds(0.15);
-                timer.Start();
-            }
-            else if (val == 2)
-            {
-                timer.Tick += new EventHandler(delegate (Object o, EventArgs a)
-                {
-                    timer.Stop();
-                    Accueil.Visibility = Visibility.Visible;
-
-                    Accueil.NavigationService.Navigate(new Pieces());
+                    if (val == 1) Accueil.NavigationService.Navigate(new Velo());
+                    if (val == 2) Accueil.NavigationService.Navigate(new Pieces());
                     TglButton.IsChecked = false;
                 });
                 timer.Interval = TimeSpan.FromSeconds(0.15);
