@@ -103,6 +103,8 @@ namespace bdd_projet
 
                     if (val == 1) Accueil.NavigationService.Navigate(new Velo());
                     if (val == 2) Accueil.NavigationService.Navigate(new Pieces());
+                    if (val == 3) Accueil.NavigationService.Navigate(new Fournisseur());
+                    if (val == 4) Accueil.NavigationService.Navigate(new Client());
                     TglButton.IsChecked = false;
                 });
                 timer.Interval = TimeSpan.FromSeconds(0.15);
@@ -153,12 +155,16 @@ namespace bdd_projet
                 tt_velos.Visibility = Visibility.Collapsed;
                 tt_pieces.Visibility = Visibility.Collapsed;
                 tt_home.Visibility = Visibility.Collapsed;
+                tt_fournisseurs.Visibility = Visibility.Collapsed;
+                tt_clients.Visibility = Visibility.Collapsed;
             }
             else
             {
                 tt_velos.Visibility = Visibility.Visible;
                 tt_pieces.Visibility = Visibility.Visible;
                 tt_home.Visibility = Visibility.Visible;
+                tt_fournisseurs.Visibility = Visibility.Visible;
+                tt_clients.Visibility = Visibility.Visible;
             }
         }
         private void Accueil_PreviwMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -168,6 +174,16 @@ namespace bdd_projet
         private void Window_MouseLeave(object sender, MouseEventArgs e)
         {
             this.Deactivated += (senders, args) => { this.WindowState = WindowState.Minimized; };
+        }
+
+        private void fournisseurs_Click(object sender, RoutedEventArgs e)
+        {
+            Click(3);
+        }
+
+        private void clients_Click(object sender, RoutedEventArgs e)
+        {
+            Click(4);
         }
     }
 }

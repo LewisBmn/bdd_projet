@@ -113,40 +113,44 @@
             <Grid x:Name="form" Height="370">
                 <StackPanel>
                     <TextBox x:Name="num" Text="N° du produit" Height="25" Width="290" TextAlignment="Left" KeyDown="KeyEnter" Padding="7,2.5,0,0"
-                     HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,30,0,0" GotFocus="num_GotFocus" 
+                     HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0" GotFocus="num_GotFocus" 
                      Foreground="DarkGray" LostFocus="num_LostFocus" Style="{DynamicResource TextBoxStyle}" TextChanged="num_TextChanged"/>
 
                     <TextBox x:Name="nom" Text="Siret du fournisseur" Height="25" Width="290" TextAlignment="Left" KeyDown="KeyEnter" Padding="7,2.5,0,0"
-                     HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,19,0,0" GotFocus="nom_GotFocus"
-                     Foreground="DarkGray" LostFocus="nom_LostFocus" Style="{DynamicResource TextBoxStyle}" TextChanged="num_TextChanged"/>
+                     HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,15,0,0" GotFocus="nom_GotFocus" TextChanged="num_TextChanged"
+                     Foreground="DarkGray" LostFocus="nom_LostFocus" Style="{DynamicResource TextBoxStyle}"/>
 
                     <TextBox x:Name="desc" Text="Description" Height="25" Width="290" TextAlignment="Left" KeyDown="KeyEnter" Padding="7,2.5,0,0"
-                     HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,19,0,0" GotFocus="desc_GotFocus"
+                     HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,15,0,0" GotFocus="desc_GotFocus"
                      Foreground="DarkGray" LostFocus="desc_LostFocus" Style="{DynamicResource TextBoxStyle}"/>
 
                     <TextBox x:Name="numfourn" Text="N° produit fournisseur" Height="25" Width="290" TextAlignment="Left" Padding="7,2.5,0,0"
-                     HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,19,0,0" GotFocus="numfourn_GotFocus"
+                     HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,15,0,0" GotFocus="numfourn_GotFocus" KeyDown="KeyEnter"
                      Foreground="DarkGray" LostFocus="numfourn_LostFocus" Style="{DynamicResource TextBoxStyle}"/>
 
                     <TextBox x:Name="prix" Text="Prix" Height="25" Width="290" TextAlignment="Left" KeyDown="KeyEnter" Padding="7,2.5,0,0"
-                     HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,19,0,0" GotFocus="prix_GotFocus"
+                     HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,15,0,0" GotFocus="prix_GotFocus"
                      Foreground="DarkGray" LostFocus="prix_LostFocus" Style="{DynamicResource TextBoxStyle}"/>
 
                     <TextBox x:Name="dateIntro" Text="Date d'introduction" Height="25" Width="290" TextAlignment="Left" KeyDown="KeyEnter" Padding="7,2.5,0,0"
-                     HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,19,0,0" GotFocus="dateIntro_GotFocus"
+                     HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,15,0,0" GotFocus="dateIntro_GotFocus"
                      Foreground="DarkGray" LostFocus="dateIntro_LostFocus" Style="{DynamicResource TextBoxStyle}"/>
 
                     <TextBlock Text="Les dates doivent être au format yyyy-mm-dd" HorizontalAlignment="Center" FontSize="10" Margin="0,0,88,0"/>
 
                     <TextBox x:Name="dateDisc" Text="Date discontinuité" Height="25" Width="290" TextAlignment="Left" Padding="7,2.5,0,0"
-                     HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,7,0,0" GotFocus="dateDisc_GotFocus"
+                     HorizontalAlignment="Center" VerticalAlignment="Top" GotFocus="dateDisc_GotFocus" Margin="0,4,0,0"
                      Foreground="DarkGray" Style="{DynamicResource TextBoxStyle}" KeyDown="KeyEnter" LostFocus="dateDisc_LostFocus"/>
 
                     <TextBlock Text="Laisser vide si toujours en production" HorizontalAlignment="Center" FontSize="10" Margin="0,0,125,0"/>
 
                     <TextBox x:Name="appro" Text="Délai d'approvisionnement" Height="25" Width="290" TextAlignment="Left" Padding="7,2.5,0,0"
-                     HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,7,0,0" Style="{DynamicResource TextBoxStyle}"
+                     HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,4,0,0" Style="{DynamicResource TextBoxStyle}"
                      Foreground="DarkGray" GotFocus="appro_GotFocus" LostFocus="appro_LostFocus" KeyDown="KeyEnter"/>
+
+                    <TextBox x:Name="quantite" Text="Quantité" Height="25" Width="290" TextAlignment="Left" Padding="7,2.5,0,0"
+                     HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,15,0,0" Style="{DynamicResource TextBoxStyle}"
+                     Foreground="DarkGray" GotFocus="quantite_GotFocus" LostFocus="quantite_LostFocus" KeyDown="KeyEnter"/>
                 </StackPanel>
             </Grid>
             <Grid x:Name="Bouton">

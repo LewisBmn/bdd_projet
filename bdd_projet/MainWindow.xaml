@@ -114,7 +114,7 @@
 
             <Setter Property="Placement" Value="Right" />
             <Setter Property="Height" Value="40"/>
-            <Setter Property="Width" Value="100"/>
+            <Setter Property="Width" Value="105"/>
             <Setter Property="Margin" Value="20,0,0,0"/>
             <Setter Property="Background" Value="#B0B0B0"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
@@ -145,7 +145,7 @@
                     Value="#F0F0F0"/>
 
             <Setter Property="FontSize"
-                    Value="20"/>
+                    Value="18"/>
 
         </Style>
         <SolidColorBrush x:Key="Button.Static.Background2" Color="#FFDDDDDD"/>
@@ -375,6 +375,82 @@
 
                                 <ToolTip x:Name="tt_pieces"
                                      Content="Pièces"
+                                     Style="{StaticResource tt_style}"/>
+
+                            </ListViewItem.ToolTip>
+                        </ListViewItem>
+                        <ListViewItem HorizontalAlignment="Left"
+                                  Margin="0,0,0,0" MouseEnter="ListViewItem_MouseEnter">
+                            <StackPanel Orientation="Horizontal"
+                                    Width="230">
+                                <Button x:Name="clients" Margin="0,5,0,0"
+                                    Width="200" Height="50" Click="clients_Click" FontSize="14" Cursor="Hand"
+                                    Style="{DynamicResource VelosButtonStyle}"
+                                    Panel.ZIndex="1">
+                                    <Button.Background>
+                                        <ImageBrush ImageSource="Assets/profil.png"
+                                                Stretch="Uniform"
+                                                AlignmentX="Left"
+                                                AlignmentY="Center">
+                                            <ImageBrush.Transform>
+                                                <TransformGroup>
+                                                    <ScaleTransform ScaleX=".7" ScaleY=".7"/>
+                                                    <TranslateTransform X="8"/>
+                                                </TransformGroup>
+                                            </ImageBrush.Transform>
+
+                                        </ImageBrush>
+                                    </Button.Background>
+                                </Button>
+                                <TextBlock Text="Clients"
+                                       Foreground="Black"
+                                       FontFamily="Trebuchet MS"
+                                       Margin="-170,15,0,10"
+                                       Panel.ZIndex="0"
+                                       Style="{DynamicResource TextBlkStyle}"/>
+                            </StackPanel>
+                            <ListViewItem.ToolTip>
+
+                                <ToolTip x:Name="tt_clients"
+                                     Content="Clients"
+                                     Style="{StaticResource tt_style}"/>
+
+                            </ListViewItem.ToolTip>
+                        </ListViewItem>
+                        <ListViewItem HorizontalAlignment="Left"
+                                  Margin="0,0,0,0" MouseEnter="ListViewItem_MouseEnter">
+                            <StackPanel Orientation="Horizontal"
+                                    Width="230">
+                                <Button x:Name="fournisseurs" Margin="0,5,0,0"
+                                    Width="200" Height="50" Click="fournisseurs_Click" FontSize="14" Cursor="Hand"
+                                    Style="{DynamicResource VelosButtonStyle}"
+                                    Panel.ZIndex="1">
+                                    <Button.Background>
+                                        <ImageBrush ImageSource="Assets/usine-eco.png"
+                                                Stretch="Uniform"
+                                                AlignmentX="Left"
+                                                AlignmentY="Center">
+                                            <ImageBrush.Transform>
+                                                <TransformGroup>
+                                                    <ScaleTransform ScaleX=".6" ScaleY=".6"/>
+                                                    <TranslateTransform X="10"/>
+                                                </TransformGroup>
+                                            </ImageBrush.Transform>
+
+                                        </ImageBrush>
+                                    </Button.Background>
+                                </Button>
+                                <TextBlock Text="Fournisseurs"
+                                       Foreground="Black"
+                                       FontFamily="Trebuchet MS"
+                                       Margin="-170,15,0,10"
+                                       Panel.ZIndex="0"
+                                       Style="{DynamicResource TextBlkStyle}"/>
+                            </StackPanel>
+                            <ListViewItem.ToolTip>
+
+                                <ToolTip x:Name="tt_fournisseurs"
+                                     Content="Fournisseurs"
                                      Style="{StaticResource tt_style}"/>
 
                             </ListViewItem.ToolTip>

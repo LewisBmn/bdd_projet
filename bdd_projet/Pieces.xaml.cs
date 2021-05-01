@@ -23,8 +23,10 @@ namespace bdd_projet
     {
         private bool numDel = false;
         private bool siretDel = false;
+        private bool firstTime = true;
 
-        private List<string[]> listeNumSiret = new List<string[]> { };
+        string tampnum = "";
+        string tampsiret = "";
 
         public Pieces()
         {
@@ -49,7 +51,7 @@ namespace bdd_projet
             timer.Tick += new EventHandler(delegate (Object o, EventArgs a)
             {
                 timer.Stop();
-                MainWindow.Accueil.NavigationService.Navigate(new CreationPiece(listeNumSiret, 0));
+                MainWindow.Accueil.NavigationService.Navigate(new CreationPiece(0));
             });
             timer.Interval = TimeSpan.FromSeconds(0.35);
             timer.Start();
@@ -60,7 +62,7 @@ namespace bdd_projet
             timer.Tick += new EventHandler(delegate (Object o, EventArgs a)
             {
                 timer.Stop();
-                MainWindow.Accueil.NavigationService.Navigate(new CreationPiece(listeNumSiret, 1));
+                MainWindow.Accueil.NavigationService.Navigate(new CreationPiece(1));
             });
             timer.Interval = TimeSpan.FromSeconds(0.35);
             timer.Start();
@@ -80,7 +82,7 @@ namespace bdd_projet
             marginAn.EasingFunction = new QuadraticEase();
 
             DoubleAnimation doubleAnimation = new DoubleAnimation(0, 1, new TimeSpan(0, 0, 0, 0, 500));
-            ExponentialEase be = new ExponentialEase(); be.EasingMode = EasingMode.EaseIn;
+            BackEase be = new BackEase(); be.EasingMode = EasingMode.EaseOut;
             doubleAnimation.EasingFunction = be;
 
             Submission.BeginAnimation(Control.MarginProperty, marginAn);
@@ -91,18 +93,21 @@ namespace bdd_projet
             bool canSubmit = true;
             int val = 0;
 
-            if (string.IsNullOrWhiteSpace(num.Text) == true || num.Text == "N° du produit")
+            if (string.IsNullOrWhiteSpace(num.Text) == true || num.Text == "N° du produit" || num.Text== "Argument invalide" || num.Text == "Le n° doit exister")
             {
                 canSubmit = false;
+                tampnum = num.Text;
                 num.Text = "Argument invalide";
                 num.TextAlignment = TextAlignment.Center;
                 num.BorderBrush = Brushes.Red;
                 num.Foreground = Brushes.Red;
                 numDel = false;
             }
-            if (string.IsNullOrWhiteSpace(siret.Text) == true || int.TryParse(siret.Text, out val) == false)
+            if (string.IsNullOrWhiteSpace(siret.Text) == true || int.TryParse(String.Concat(siret.Text.Where(c => !Char.IsWhiteSpace(c))), out val) == false 
+                || siret.Text == "Argument invalide" || siret.Text == "Le n° doit exister")
             {
                 canSubmit = false;
+                tampsiret = siret.Text;
                 siret.Text = "Argument invalide";
                 siret.TextAlignment = TextAlignment.Center;
                 siret.BorderBrush = Brushes.Red;
@@ -115,8 +120,17 @@ namespace bdd_projet
 
                 MySqlCommand command = MainWindow.maConnexion.CreateCommand();
                 command.CommandText = delTable;
-                command.Parameters.Add("@num", MySqlDbType.String).Value = num.Text.ToLower();
-                command.Parameters.Add("@siret", MySqlDbType.String).Value = val;
+                command.Parameters.Add("@num", MySqlDbType.VarChar).Value = String.Concat(num.Text.ToLower().Where(c => !Char.IsWhiteSpace(c)));
+                command.Parameters.Add("@siret", MySqlDbType.VarChar).Value = String.Concat(siret.Text.ToLower().Where(c => !Char.IsWhiteSpace(c))); ;
+
+                delTable = "SELECT * FROM pieces WHERE numPiece = @num AND Siret = @siret";
+                MySqlCommand com = MainWindow.maConnexion.CreateCommand();
+                com.CommandText = delTable;
+                com.Parameters.Add("@num", MySqlDbType.VarChar).Value = String.Concat(num.Text.ToLower().Where(c => !Char.IsWhiteSpace(c)));
+                com.Parameters.Add("@siret", MySqlDbType.VarChar).Value = String.Concat(siret.Text.ToLower().Where(c => !Char.IsWhiteSpace(c))); ;
+                MySqlDataReader reader = com.ExecuteReader();
+                string ans = reader.Read().ToString();
+                reader.Close();
 
                 try
                 {
@@ -127,10 +141,9 @@ namespace bdd_projet
                     return;
                 }
 
-                command.Dispose();
-
-                if (!AssociationNumSiretExiste(num.Text, val))
+                if(ans=="False")
                 {
+                    tampnum = num.Text;
                     num.Text = "Le n° doit exister";
                     num.TextAlignment = TextAlignment.Center;
                     num.BorderBrush = Brushes.Red;
@@ -138,6 +151,7 @@ namespace bdd_projet
                     FocusManager.SetFocusedElement(FocusManager.GetFocusScope(num), null);
                     numDel = false;
 
+                    tampsiret = siret.Text;
                     siret.Text = "Le n° doit exister";
                     siret.TextAlignment = TextAlignment.Center;
                     siret.BorderBrush = Brushes.Red;
@@ -147,7 +161,10 @@ namespace bdd_projet
 
                     Keyboard.ClearFocus();
                 }
-                else
+
+                command.Dispose();
+
+                if(ans=="True")
                 {
                     MainWindow.Accueil.NavigationService.Navigate(new Pieces());
                 }
@@ -157,7 +174,7 @@ namespace bdd_projet
         {
             if (numDel == false)
             {
-                num.Text = "";
+                num.Text = tampnum;
                 num.FontSize = 12;
                 num.TextAlignment = TextAlignment.Left;
                 num.BorderBrush = Brushes.Black;
@@ -186,7 +203,7 @@ namespace bdd_projet
 
         private void Pieces_Loaded(object sender, RoutedEventArgs e)
         {
-            string query = "Select * from pieces";
+            string query = "Select * from pieces ORDER BY Siret";
             MySqlCommand command = MainWindow.maConnexion.CreateCommand();
             command.CommandText = query;
 
@@ -194,15 +211,6 @@ namespace bdd_projet
             DataTable dt = new DataTable();
             dt.Load(reader);
             dataGrid1.ItemsSource = dt.DefaultView;
-
-            command.CommandText = "SELECT numPiece, Siret FROM pieces";
-            reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                listeNumSiret.Add(new string[] { reader.GetString(0).ToLower(), reader.GetString(1) });
-            }
-            command.Dispose();
-
 
             DoubleAnimation doubleAnimation = new DoubleAnimation(0, 1, new TimeSpan(0, 0, 0, 2, 0));
             doubleAnimation.EasingFunction = new ExponentialEase();
@@ -212,21 +220,15 @@ namespace bdd_projet
 
             MainWindow.Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
             MainWindow.Accueil.BeginAnimation(Control.MarginProperty, marginAn);
+
+            firstTime = false;
         }
         DispatcherTimer timer = new DispatcherTimer();
-        private bool AssociationNumSiretExiste(string num, int siret)
-        {
-            for(int i = 0; i<listeNumSiret.Count; i++)
-            {
-                if(listeNumSiret[i][0] == num && int.Parse(listeNumSiret[i][1]) == siret) { return true; }
-            }
-            return false;
-        }
         private void siret_GotFocus(object sender, RoutedEventArgs e)
         {
             if (siretDel == false)
             {
-                siret.Text = "";
+                siret.Text = tampsiret;
                 siret.FontSize = 12;
                 siret.TextAlignment = TextAlignment.Left;
                 siret.BorderBrush = Brushes.Black;
@@ -251,6 +253,33 @@ namespace bdd_projet
             if (e.Key == Key.Return)
             {
                 del_Click(sender, e);
+            }
+        }
+
+        private void num_checked(object sender, RoutedEventArgs e)
+        {
+            string query = "Select * from pieces ORDER BY numPiece";
+            MySqlCommand command = MainWindow.maConnexion.CreateCommand();
+            command.CommandText = query;
+
+            MySqlDataReader reader = command.ExecuteReader();
+            DataTable dt = new DataTable();
+            dt.Load(reader);
+            dataGrid1.ItemsSource = dt.DefaultView;
+        }
+
+        private void fournisseur_checked(object sender, RoutedEventArgs e)
+        {
+            if (!firstTime)
+            {
+                string query = "Select * from pieces ORDER BY Siret";
+                MySqlCommand command = MainWindow.maConnexion.CreateCommand();
+                command.CommandText = query;
+
+                MySqlDataReader reader = command.ExecuteReader();
+                DataTable dt = new DataTable();
+                dt.Load(reader);
+                dataGrid1.ItemsSource = dt.DefaultView;
             }
         }
     }

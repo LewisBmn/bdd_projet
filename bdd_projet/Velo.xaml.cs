@@ -24,14 +24,16 @@ namespace bdd_projet
     /// </summary>
     public partial class Velo : Page
     {
-        List<int> listeNum = new List<int> { };
-
         private bool numDel = false;
+        private bool firstTime = true;
+
+        string tampnum = "";
 
         public Velo()
         {
             InitializeComponent();
         }
+
         #region Click and Focus
         private void Click()
         {
@@ -50,7 +52,7 @@ namespace bdd_projet
             timer.Tick += new EventHandler(delegate (Object o, EventArgs a)
             {
                 timer.Stop();
-                MainWindow.Accueil.NavigationService.Navigate(new CreationVelo(listeNum, 0));
+                MainWindow.Accueil.NavigationService.Navigate(new CreationVelo(0));
             });
             timer.Interval = TimeSpan.FromSeconds(0.35);
             timer.Start();
@@ -61,7 +63,7 @@ namespace bdd_projet
             timer.Tick += new EventHandler(delegate (Object o, EventArgs a)
             {
                 timer.Stop();
-                MainWindow.Accueil.NavigationService.Navigate(new CreationVelo(listeNum, 1));
+                MainWindow.Accueil.NavigationService.Navigate(new CreationVelo(1));
             });
             timer.Interval = TimeSpan.FromSeconds(0.35);
             timer.Start();
@@ -79,7 +81,7 @@ namespace bdd_projet
             marginAn.EasingFunction = new QuadraticEase();
 
             DoubleAnimation doubleAnimation = new DoubleAnimation(0, 1, new TimeSpan(0, 0, 0, 0, 500));
-            ExponentialEase be = new ExponentialEase(); be.EasingMode = EasingMode.EaseIn;
+            BackEase be = new BackEase(); be.EasingMode = EasingMode.EaseOut;
             doubleAnimation.EasingFunction = be;
 
             Submission.BeginAnimation(Control.MarginProperty, marginAn);
@@ -93,19 +95,30 @@ namespace bdd_projet
             if (string.IsNullOrWhiteSpace(num.Text) == true || int.TryParse(num.Text, out val) == false)
             {
                 canSubmit = false;
-                num.Text = "Invalid argument";
+                tampnum = num.Text;
+                num.Text = "Argument invalide";
                 num.TextAlignment = TextAlignment.Center;
                 num.BorderBrush = Brushes.Red;
                 num.Foreground = Brushes.Red;
+                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(num), null);
+                Keyboard.ClearFocus();
                 numDel = false;
             }
             if (canSubmit)
             {
-                string delTable = "DELETE FROM velo WHERE numProduit = @num";
+                string delTable = "DELETE FROM Velo WHERE numProduit = @num";
 
                 MySqlCommand command = MainWindow.maConnexion.CreateCommand();
                 command.CommandText = delTable;
                 command.Parameters.Add("@num", MySqlDbType.Int32).Value = val;
+
+                delTable = "SELECT * FROM velo WHERE numProduit = @num";
+                MySqlCommand com = MainWindow.maConnexion.CreateCommand();
+                com.CommandText = delTable;
+                com.Parameters.Add("@num", MySqlDbType.Int32).Value = val;
+                MySqlDataReader reader = com.ExecuteReader();
+                string ans = reader.Read().ToString();
+                reader.Close();
 
                 try
                 {
@@ -117,10 +130,11 @@ namespace bdd_projet
                 }
 
                 command.Dispose();
-                if (listeNum.Contains(val) == false)
+                if (ans=="False")
                 {
+                    tampnum = num.Text;
                     num.Text = "Le n° doit exister";
-                    num.FontSize = 10;
+                    num.FontSize = 12;
                     num.TextAlignment = TextAlignment.Center;
                     num.BorderBrush = Brushes.Red;
                     num.Foreground = Brushes.Red;
@@ -128,7 +142,7 @@ namespace bdd_projet
                     Keyboard.ClearFocus();
                     numDel = false;
                 }
-                if (numDel == true)
+                if (ans=="True")
                 {
                     MainWindow.Accueil.NavigationService.Navigate(new Velo());
                 }
@@ -139,7 +153,7 @@ namespace bdd_projet
         {
             if (numDel == false)
             {
-                num.Text = "";
+                num.Text = tampnum;
                 num.FontSize = 12;
                 num.TextAlignment = TextAlignment.Left;
                 num.BorderBrush = Brushes.Black;
@@ -171,7 +185,7 @@ namespace bdd_projet
         DispatcherTimer timer = new DispatcherTimer();
         private void Velo_Loaded(object sender, RoutedEventArgs e)
         {
-            string query = "Select * from velo";
+            string query = "Select * from Velo";
             MySqlCommand command = MainWindow.maConnexion.CreateCommand();
             command.CommandText = query;
 
@@ -179,14 +193,6 @@ namespace bdd_projet
             DataTable dt = new DataTable();
             dt.Load(reader);
             dataGrid1.ItemsSource = dt.DefaultView;
-
-            command.CommandText = "SELECT DISTINCT numProduit FROM velo";
-            reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                listeNum.Add(Int32.Parse(reader.GetString(0)));
-            }
-            command.Dispose();
 
             DoubleAnimation doubleAnimation = new DoubleAnimation(0, 1, new TimeSpan(0, 0, 0, 2, 0));
             doubleAnimation.EasingFunction = new ExponentialEase();
@@ -196,6 +202,49 @@ namespace bdd_projet
 
             MainWindow.Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
             MainWindow.Accueil.BeginAnimation(Control.MarginProperty, marginAn);
+
+            firstTime = false;
         }
+
+        #region RadioButtons
+        private void categorie_checked(object sender, RoutedEventArgs e)
+        {
+            string query = "Select * from Velo ORDER BY type";
+            MySqlCommand command = MainWindow.maConnexion.CreateCommand();
+            command.CommandText = query;
+
+            MySqlDataReader reader = command.ExecuteReader();
+            DataTable dt = new DataTable();
+            dt.Load(reader);
+            dataGrid1.ItemsSource = dt.DefaultView;
+        }
+
+        private void nom_checked(object sender, RoutedEventArgs e)
+        {
+            string query = "Select * from Velo ORDER BY nom";
+            MySqlCommand command = MainWindow.maConnexion.CreateCommand();
+            command.CommandText = query;
+
+            MySqlDataReader reader = command.ExecuteReader();
+            DataTable dt = new DataTable();
+            dt.Load(reader);
+            dataGrid1.ItemsSource = dt.DefaultView;
+        }
+
+        private void num_checked(object sender, RoutedEventArgs e)
+        {
+            if (!firstTime)
+            {
+                string query = "Select * from Velo ORDER BY numProduit";
+                MySqlCommand command = MainWindow.maConnexion.CreateCommand();
+                command.CommandText = query;
+
+                MySqlDataReader reader = command.ExecuteReader();
+                DataTable dt = new DataTable();
+                dt.Load(reader);
+                dataGrid1.ItemsSource = dt.DefaultView;
+            }
+        }
+        #endregion
     }
 }

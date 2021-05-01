@@ -126,9 +126,15 @@
                 </StackPanel>
             </Grid>
         </StackPanel>
-        <DataGrid Name="dataGrid1" Width="730" Height="350" 
+        <StackPanel Margin="40,60,0,0" Orientation="Horizontal">
+            <Label FontWeight="Bold">Sélection de l'affichage</Label>
+            <RadioButton Margin="10,8,0,0" IsChecked="True" Checked="num_checked">Par numéro</RadioButton>
+            <RadioButton Margin="10,8,0,0" Checked="categorie_checked" >Par catégorie</RadioButton>
+            <RadioButton Margin="10,8,0,0" Checked="nom_checked">Par nom</RadioButton>
+        </StackPanel>
+        <DataGrid Name="dataGrid1" Width="730" Height="330" 
                   HorizontalAlignment="Center" VerticalAlignment="Bottom"
                   AlternatingRowBackground="Gainsboro"  AlternationCount="2"
-                  IsEnabled="False"/>
+                  IsReadOnly="True"/>
     </Grid>
 </Page>

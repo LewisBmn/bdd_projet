@@ -1,4 +1,4 @@
-﻿<Page x:Class="bdd_projet.Pieces"
+﻿<Page x:Class="bdd_projet.Fournisseur"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -6,7 +6,8 @@
       xmlns:local="clr-namespace:bdd_projet"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="730"
-      Title="Pieces" Loaded="Pieces_Loaded">
+      Title="Fournisseur"
+      Loaded="Page_Loaded">
     <Page.Resources>
         <Style x:Key="FocusVisual">
             <Setter Property="Control.Template">
@@ -97,47 +98,33 @@
             </Setter>
         </Style>
     </Page.Resources>
-
-    <Grid>
-        <StackPanel HorizontalAlignment="Left" Width="730" Height="100" VerticalAlignment="Top" Orientation="Horizontal" Margin="30,0,0,0">
+    <Grid HorizontalAlignment="Left">
+        <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Height="100" VerticalAlignment="Top" Margin="30,0,0,0">
             <Button x:Name="Creation" Content="Création" FontFamily="Trebuchet MS" FontSize ="18"
                     HorizontalAlignment="Center" VerticalAlignment="Top" Width="140" Height="40" Margin="10,20,0,0"
-                     Cursor="Hand" Click="Creation_Click" BorderBrush="Transparent" Style="{DynamicResource ButtonStyle}"/>
+                    Click="Creation_Click" Cursor="Hand" Style="{DynamicResource ButtonStyle}" BorderBrush="Transparent"/>
 
             <Button x:Name="Modify" Content="Modification" VerticalAlignment="Top" Width="140" Height="40" Margin="10,20,0,0"
-                    Click="Modify_Click" Cursor="Hand" FontFamily="Trebuchet MS" FontSize ="18" BorderBrush="Transparent"
-                    Style="{DynamicResource ButtonStyle}"/>
+                    Click="Modify_Click" Cursor="Hand" BorderBrush="Transparent" FontFamily="Trebuchet MS" FontSize ="18" Style="{DynamicResource ButtonStyle}"/>
 
             <Button x:Name="Suppr" Content="Suppression" FontFamily="Trebuchet MS" FontSize ="18" Panel.ZIndex="1"
                     HorizontalAlignment="Center" VerticalAlignment="Top" Width="140" Height="40" Margin="10,20,0,0"
-                    Cursor="Hand" Click="Suppr_Click" BorderBrush="Transparent" Style="{DynamicResource ButtonStyle}"/>
+                    Click="Suppr_Click" Cursor="Hand" BorderBrush="Transparent" Style="{DynamicResource ButtonStyle}"/>
 
             <Grid x:Name="Submission" Opacity="0">
                 <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Height="100" VerticalAlignment="Top">
-                    <StackPanel Orientation="Vertical">
-                        <TextBox x:Name="num" Text="N° du produit" Height="20" Width="110" TextAlignment="Center"
-                     HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="DarkGray" Margin="80, 10, 0 0"
-                     IsEnabled="False" GotFocus="num_GotFocus" LostFocus="num_LostFocus"
-                     KeyDown="num_KeyDown"/>
-                        <TextBox x:Name="siret" Text="Siret" Height="20" Width="110" TextAlignment="Center"
-                     HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="DarkGray" Margin="80, 15, 0 0"
-                     IsEnabled="False" GotFocus="siret_GotFocus" LostFocus="siret_LostFocus" KeyDown="siret_KeyDown"/>
-                    </StackPanel>
+                    <TextBox x:Name="num" Text="N° du produit" Height="20" Width="110" TextAlignment="Center" TextWrapping="Wrap"
+                     HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="DarkGray" Margin="80, 30, 0 0"
+                     IsEnabled="False" GotFocus="num_GotFocus" LostFocus="num_LostFocus" KeyDown="num_KeyDown"/>
 
-                    <Button x:Name="del" FontSize="12" BorderBrush="Transparent"
-                    HorizontalAlignment="Center" VerticalAlignment="Top" Width="30" Height="30" Margin="5,25,0,0"
-                    Cursor="Hand" IsEnabled="False" Click="del_Click" Style="{DynamicResource DelButtonStyle}">
+                    <Button x:Name="del" HorizontalAlignment="Center" VerticalAlignment="Top" Width="30" Height="30" Margin="5,25,0,0"
+                    Click="del_Click" Cursor="Hand" IsEnabled="False" BorderBrush="Transparent" Style="{DynamicResource DelButtonStyle}">
                         <Button.Content>
                             <Image Source="Assets/delete.png" Stretch="Fill"/>
                         </Button.Content>
                     </Button>
                 </StackPanel>
             </Grid>
-        </StackPanel>
-        <StackPanel Margin="40,60,0,0" Orientation="Horizontal">
-            <Label FontWeight="Bold">Sélection de l'affichage</Label>
-            <RadioButton Margin="10,8,0,0" IsChecked="True" Checked="fournisseur_checked" >Par fournisseur</RadioButton>
-            <RadioButton Margin="10,8,0,0" Checked="num_checked">Par numéro</RadioButton>
         </StackPanel>
         <DataGrid Name="dataGrid1" Width="730" Height="330" 
                   HorizontalAlignment="Center" VerticalAlignment="Bottom"

@@ -33,25 +33,30 @@ namespace bdd_projet
         bool approDel = false;
         bool prixDel = false;
         bool unable = false;
+        bool quantiteDel = false;
         #endregion
 
-        List<string[]> listeNum = new List<string[]> { };
+        string tampfourn = "";
+        string tampnum = "";
+        string tampnom = "";
+
         int value = 0;
 
-        public CreationPiece(List<string[]> listeNum, int value) //value = 0 si creation, 1 si modification
+        public CreationPiece(int value) //value = 0 si creation, 1 si modification
         {
             InitializeComponent();
-            this.listeNum = listeNum;
             this.value = value;
             if (value == 1)
             {
                 num.Text = "N° du produit à modifier";
+
                 numfourn.IsEnabled = false;
                 dateIntro.IsEnabled = false;
                 dateDisc.IsEnabled = false;
                 desc.IsEnabled = false;
                 appro.IsEnabled = false;
                 prix.IsEnabled = false;
+                quantite.IsEnabled = false;
                 Submit.IsEnabled = false;
             }
             unable = true;
@@ -63,23 +68,22 @@ namespace bdd_projet
         {
             if (numDel == false)
             {
-                num.Text = "";
-                num.FontSize = 12;
+                num.Text = tampnum;
+                num.Foreground = Brushes.Black;
                 num.TextAlignment = TextAlignment.Left;
                 num.BorderBrush = Brushes.Black;
                 numDel = true;
-                num.Foreground = Brushes.Black;
             }
         }
         private void nom_GotFocus(object sender, RoutedEventArgs e)
         {
             if (nomDel == false)
             {
-                nom.Text = "";
+                nom.Text = tampnom;
+                nom.Foreground = Brushes.Black;
                 nom.TextAlignment = TextAlignment.Left;
                 nom.BorderBrush = Brushes.Black;
                 nomDel = true;
-                nom.Foreground = Brushes.Black;
             }
         }
         private void dateIntro_GotFocus(object sender, RoutedEventArgs e)
@@ -87,10 +91,9 @@ namespace bdd_projet
             if (introDel == false)
             {
                 dateIntro.Text = "";
-                dateIntro.TextAlignment = TextAlignment.Left;
+                dateIntro.Foreground = Brushes.Black;
                 dateIntro.BorderBrush = Brushes.Black;
                 introDel = true;
-                dateIntro.Foreground = Brushes.Black;
             }
         }
         private void dateDisc_GotFocus(object sender, RoutedEventArgs e)
@@ -98,10 +101,9 @@ namespace bdd_projet
             if (discDel == false)
             {
                 dateDisc.Text = "";
-                dateDisc.TextAlignment = TextAlignment.Left;
+                dateDisc.Foreground = Brushes.Black;
                 dateDisc.BorderBrush = Brushes.Black;
                 discDel = true;
-                dateDisc.Foreground = Brushes.Black;
             }
         }
         private void desc_GotFocus(object sender, RoutedEventArgs e)
@@ -109,23 +111,20 @@ namespace bdd_projet
             if (descDel == false)
             {
                 desc.Text = "";
-                desc.FontSize = 12;
-                desc.TextAlignment = TextAlignment.Left;
+                desc.Foreground = Brushes.Black;
                 desc.BorderBrush = Brushes.Black;
                 descDel = true;
-                desc.Foreground = Brushes.Black;
             }
         }
         private void numfourn_GotFocus(object sender, RoutedEventArgs e)
         {
             if (numfournDel == false)
             {
-                numfourn.Text = "";
-                numfourn.FontSize = 12;
+                numfourn.Text = tampfourn;
+                numfourn.Foreground = Brushes.Black;
                 numfourn.TextAlignment = TextAlignment.Left;
                 numfourn.BorderBrush = Brushes.Black;
                 numfournDel = true;
-                numfourn.Foreground = Brushes.Black;
             }
         }
         private void appro_GotFocus(object sender, RoutedEventArgs e)
@@ -133,11 +132,9 @@ namespace bdd_projet
             if (approDel == false)
             {
                 appro.Text = "";
-                appro.FontSize = 12;
-                appro.TextAlignment = TextAlignment.Left;
+                appro.Foreground = Brushes.Black;
                 appro.BorderBrush = Brushes.Black;
                 approDel = true;
-                appro.Foreground = Brushes.Black;
             }
         }
         private void prix_GotFocus(object sender, RoutedEventArgs e)
@@ -145,11 +142,19 @@ namespace bdd_projet
             if (prixDel == false)
             {
                 prix.Text = "";
-                prix.FontSize = 12;
-                prix.TextAlignment = TextAlignment.Left;
+                prix.Foreground = Brushes.Black;
                 prix.BorderBrush = Brushes.Black;
                 prixDel = true;
-                prix.Foreground = Brushes.Black;
+            }
+        }
+        private void quantite_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (quantiteDel == false)
+            {
+                quantite.Text = "";
+                quantite.Foreground = Brushes.Black;
+                quantite.BorderBrush = Brushes.Black;
+                quantiteDel = true;
             }
         }
         private void num_LostFocus(object sender, RoutedEventArgs e)
@@ -243,155 +248,204 @@ namespace bdd_projet
                 prix.BorderBrush = Brushes.DarkGray;
             }
         }
+        private void quantite_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(quantite.Text))
+            {
+                quantite.Text = "Quantité";
+                quantite.Foreground = Brushes.DarkGray;
+                quantite.TextAlignment = TextAlignment.Left;
+                quantiteDel = false;
+                quantite.BorderBrush = Brushes.DarkGray;
+            }
+        }
         #endregion
-
         private void Submit_Click(object send, RoutedEventArgs e)
         {
             bool canSubmit = true;
             int delay = 0;
-            int siret = 0;
             int cost = 0;
+            int number = 0;
             DateTime dtIn = new DateTime();
             DateTime dtDc = new DateTime();
 
             bool valDc = false;
 
-            if (string.IsNullOrWhiteSpace(num.Text) == true || num.Text == "N° du produit" || num.Text == "Argument invalide")
+            if (string.IsNullOrWhiteSpace(num.Text) == true || num.Text == "N° du produit")
             {
                 canSubmit = false;
-                num.Text = "Argument invalide";
-                num.TextAlignment = TextAlignment.Center;
                 num.BorderBrush = Brushes.Red;
-                num.Foreground = Brushes.Red;
                 numDel = false;
             }
-            if (string.IsNullOrWhiteSpace(nom.Text) == true || int.TryParse(nom.Text, out siret) == false || nom.Text == "Siret du fournisseur"
-                || nom.Text == "Argument invalide")
+            if (string.IsNullOrWhiteSpace(nom.Text) == true || int.TryParse(String.Concat(nom.Text.Where(c => !Char.IsWhiteSpace(c))), out int siret) == false || nom.Text == "Siret du fournisseur"
+                || nom.Text == "Le n° de siret doit exister")
             {
                 canSubmit = false;
-                nom.Text = "Argument invalide";
-                nom.TextAlignment = TextAlignment.Center;
                 nom.BorderBrush = Brushes.Red;
-                nom.Foreground = Brushes.Red;
                 nomDel = false;
             }
-            if (string.IsNullOrWhiteSpace(desc.Text) || desc.Text == "Description" || desc.Text == "Argument invalide")
+            if (string.IsNullOrWhiteSpace(desc.Text) || desc.Text == "Description")
             {
                 canSubmit = false;
-                desc.Text = "Argument invalide";
-                desc.TextAlignment = TextAlignment.Center;
                 desc.BorderBrush = Brushes.Red;
-                desc.Foreground = Brushes.Red;
                 descDel = false;
             }
             if (string.IsNullOrWhiteSpace(numfourn.Text) == true || numfourn.Text == "N° produit fournisseur"
-                || numfourn.Text == "Argument invalide")
+                || numfourn.Text == "Cette pièce de ce fournisseur est déjà proposée"
+                || numfourn.Text == "Ce fournisseur ne possède pas cette pièce")
             {
                 canSubmit = false;
-                numfourn.Text = "Argument invalide";
-                numfourn.FontSize = 12;
-                numfourn.TextAlignment = TextAlignment.Center;
                 numfourn.BorderBrush = Brushes.Red;
-                numfourn.Foreground = Brushes.Red;
                 numfournDel = false;
             }
-            if (string.IsNullOrWhiteSpace(prix.Text) == true || int.TryParse(prix.Text, out cost) == false)
+            if (string.IsNullOrWhiteSpace(prix.Text) == true || int.TryParse(String.Concat(prix.Text.Where(c => !Char.IsWhiteSpace(c))), out cost) == false)
             {
                 canSubmit = false;
-                prix.Text = "Argument invalide";
-                prix.TextAlignment = TextAlignment.Center;
                 prix.BorderBrush = Brushes.Red;
-                prix.Foreground = Brushes.Red;
                 prixDel = false;
             }
-            if (string.IsNullOrWhiteSpace(appro.Text) == true || int.TryParse(appro.Text, out delay) == false)
+            if (string.IsNullOrWhiteSpace(appro.Text) == true || !int.TryParse(String.Concat(appro.Text.Where(c => !Char.IsWhiteSpace(c))), out delay))
             {
                 canSubmit = false;
-                appro.Text = "Argument invalide";
-                appro.TextAlignment = TextAlignment.Center;
                 appro.BorderBrush = Brushes.Red;
-                appro.Foreground = Brushes.Red;
-                appro.FontSize = 12;
                 approDel = false;
             }
-            if (DateTime.TryParse(dateIntro.Text, out dtIn) == false)
+            if (DateTime.TryParse(String.Concat(dateIntro.Text.Where(c => !Char.IsWhiteSpace(c))), out dtIn) == false)
             {
                 canSubmit = false;
-                dateIntro.Text = "Argument invalide";
-                dateIntro.TextAlignment = TextAlignment.Center;
                 dateIntro.BorderBrush = Brushes.Red;
-                dateIntro.Foreground = Brushes.Red;
                 introDel = false;
             }
-            if (dateDisc.Text != "Date discontinuité" && string.IsNullOrWhiteSpace(dateDisc.Text) == false && DateTime.TryParse(dateDisc.Text, out dtDc) == false)
+            if (dateDisc.Text != "Date discontinuité" && string.IsNullOrWhiteSpace(dateDisc.Text) == false
+                && DateTime.TryParse(String.Concat(dateDisc.Text.Where(c => !Char.IsWhiteSpace(c))), out dtDc) == false)
             {
                 canSubmit = false;
-                dateDisc.Text = "Argument invalide";
-                dateDisc.TextAlignment = TextAlignment.Center;
                 dateDisc.BorderBrush = Brushes.Red;
-                dateDisc.Foreground = Brushes.Red;
                 discDel = false;
             }
-            if (dateDisc.Text != "Date discontinuité" && string.IsNullOrWhiteSpace(dateDisc.Text) == false && dateDisc.Text != "Argument invalide")
+            if (dateDisc.Text != "Date discontinuité" && string.IsNullOrWhiteSpace(dateDisc.Text) == false)
             {
                 valDc = true;
             }
+            if (string.IsNullOrWhiteSpace(quantite.Text) || !int.TryParse(String.Concat(quantite.Text.Where(c => !Char.IsWhiteSpace(c))), out number))
+            {
+                canSubmit = false;
+                quantite.BorderBrush = Brushes.Red;
+                quantiteDel = false;
+            }
             if (canSubmit)
             {
-                string insertTable = "";
-                if (value == 0)
+                MySqlCommand fourExists = MainWindow.maConnexion.CreateCommand();
+                fourExists.CommandText = "select * from fournisseur where Siret = @siret";
+                fourExists.Parameters.Add("@siret", MySqlDbType.VarChar).Value = String.Concat(nom.Text.Where(c => !Char.IsWhiteSpace(c)));
+                MySqlDataReader reader = fourExists.ExecuteReader();
+                string ans = reader.Read().ToString();
+
+                if (ans == "True")
                 {
-                    insertTable = "insert into pieces values (@num, @description, @nom, @numfourn, @prix, @dtIn, @dtDc, @delai)";
-                }
-                if (value == 1)
-                {
-                    insertTable = "update pieces set descr=@description, nomFourn=@nom, numProdCat=@numfourn, prix=@prix" +
-                        ", dateIntro=@dtIn, dateDiscont=@dtDc, delaiAppr=@delai WHERE numPiece=@num";
-                }
-                MySqlCommand command = MainWindow.maConnexion.CreateCommand();
-                command.CommandText = insertTable;
-                command.Parameters.Add("@num", MySqlDbType.VarChar).Value = num.Text.ToUpper();
-                command.Parameters.Add("@description", MySqlDbType.VarChar).Value = GoodMaj(desc.Text);
-                command.Parameters.Add("@nom", MySqlDbType.Int32).Value = siret;
-                command.Parameters.Add("@numfourn", MySqlDbType.VarChar).Value = GoodMaj(numfourn.Text);
-                command.Parameters.Add("@prix", MySqlDbType.Int32).Value = cost;
-                command.Parameters.Add("@dtIn", MySqlDbType.DateTime).Value = dtIn;
-                if (valDc)
-                {
-                    command.Parameters.Add("@dtDc", MySqlDbType.DateTime).Value = dtDc;
+
+                    MySqlCommand com = MainWindow.maConnexion.CreateCommand();
+                    com.CommandText = "select * from PieceFournisseur where Siret = @siret AND numProduit = @numProd";
+                    com.Parameters.Add("@siret", MySqlDbType.VarChar).Value = String.Concat(nom.Text.Where(c => !Char.IsWhiteSpace(c)));
+                    com.Parameters.Add("@numProd", MySqlDbType.VarChar).Value = GoodMaj(String.Concat(numfourn.Text.Where(c => !Char.IsWhiteSpace(c))));
+                    reader = com.ExecuteReader();
+                    ans = reader.Read().ToString();
+                    com.Dispose();
+
+                    if (ans == "True")
+                    {
+                        MySqlCommand coupleProduitSiretExists = MainWindow.maConnexion.CreateCommand();
+                        coupleProduitSiretExists.CommandText = "SELECT num_Produit_fournisseur, Siret FROM pieces WHERE num_Produit_fournisseur=@num AND Siret=@siret";
+                        coupleProduitSiretExists.Parameters.Add("@siret", MySqlDbType.VarChar).Value = String.Concat(nom.Text.Where(c => !Char.IsWhiteSpace(c)));
+                        coupleProduitSiretExists.Parameters.Add("@num", MySqlDbType.VarChar).Value = GoodMaj(String.Concat(numfourn.Text.Where(c => !Char.IsWhiteSpace(c))));
+                        reader = coupleProduitSiretExists.ExecuteReader();
+                        ans = reader.Read().ToString();
+                        coupleProduitSiretExists.Dispose();
+
+                        if (ans == "False" || value == 1)
+                        {
+                            string insertTable = "";
+                            if (value == 0)
+                            {
+                                insertTable = "insert into pieces values (@num, @description, @nom, @numfourn, @prix, @dtIn, @dtDc, @delai, @number)";
+                            }
+                            if (value == 1)
+                            {
+                                insertTable = "update pieces set descr=@description, num_Produit_fournisseur=@numfourn, prix=@prix" +
+                                    ", dateIntro=@dtIn, dateDiscont=@dtDc, delaiAppr=@delai, quantite=@number WHERE numPiece=@num AND Siret=@nom";
+                            }
+
+                            MySqlCommand command = MainWindow.maConnexion.CreateCommand();
+                            command.CommandText = insertTable;
+                            command.Parameters.Add("@num", MySqlDbType.VarChar).Value = String.Concat(num.Text.ToUpper().Where(c => !Char.IsWhiteSpace(c)));
+                            command.Parameters.Add("@description", MySqlDbType.VarChar).Value = GoodMaj(desc.Text);
+                            command.Parameters.Add("@nom", MySqlDbType.VarChar).Value = String.Concat(nom.Text.Where(c => !Char.IsWhiteSpace(c)));
+                            command.Parameters.Add("@numfourn", MySqlDbType.VarChar).Value = GoodMaj(String.Concat(numfourn.Text.Where(c => !Char.IsWhiteSpace(c))));
+                            command.Parameters.Add("@prix", MySqlDbType.Int32).Value = cost;
+                            command.Parameters.Add("@dtIn", MySqlDbType.DateTime).Value = dtIn;
+
+                            if (valDc)
+                            {
+                                command.Parameters.Add("@dtDc", MySqlDbType.DateTime).Value = dtDc;
+                            }
+                            else
+                            {
+                                command.Parameters.Add("@dtDc", MySqlDbType.DateTime).Value = null;
+                            }
+                            command.Parameters.Add("@number", MySqlDbType.Int32).Value = number;
+                            command.Parameters.Add("@delai", MySqlDbType.Int32).Value = delay;
+                            try
+                            {
+                                command.ExecuteNonQuery();
+                            }
+                            catch (MySqlException er)
+                            {
+                                MessageBox.Show(er.ToString());
+                                if (er.Code == 0)
+                                {
+                                    tampnum = num.Text;
+                                    num.Text = "L'association n° produit / siret doit être unique";
+                                    num.TextAlignment = TextAlignment.Center;
+                                    num.BorderBrush = Brushes.Red;
+                                    num.Foreground = Brushes.Red;
+                                    numDel = false;
+                                }
+                                return;
+                            }
+                            command.Dispose();
+                            if (numDel == true)
+                            {
+                                MainWindow.Accueil.NavigationService.Navigate(new Pieces());
+                            }
+                        }
+                        else
+                        {
+                            tampfourn = numfourn.Text;
+                            numfourn.Text = "Cette pièce de ce fournisseur est déjà proposée";
+                            numfourn.TextAlignment = TextAlignment.Center;
+                            numfourn.BorderBrush = Brushes.Red;
+                            numfourn.Foreground = Brushes.Red;
+                            numfournDel = false;
+                        }
+                    }
+                    else
+                    {
+                        tampfourn = numfourn.Text;
+                        numfourn.Text = "Ce fournisseur ne possède pas cette pièce";
+                        numfourn.TextAlignment = TextAlignment.Center;
+                        numfourn.BorderBrush = Brushes.Red;
+                        numfourn.Foreground = Brushes.Red;
+                        numfournDel = false;
+                    }
                 }
                 else
                 {
-                    command.Parameters.Add("@dtDc", MySqlDbType.DateTime).Value = null;
-                }
-                command.Parameters.Add("@delai", MySqlDbType.Int32).Value = delay;
-                try
-                {
-                    command.ExecuteNonQuery();
-                }
-                catch (MySqlException er)
-                {
-                    if (er.Code == 0)
-                    {
-                        num.Text = "L'association n° produit / siret doit être unique";
-                        num.TextAlignment = TextAlignment.Center;
-                        num.BorderBrush = Brushes.Red;
-                        num.Foreground = Brushes.Red;
-                        numDel = false;
-
-                        nom.Text = "Le n° de siret doit exister";
-                        nom.TextAlignment = TextAlignment.Center;
-                        nom.BorderBrush = Brushes.Red;
-                        nom.Foreground = Brushes.Red;
-                        nomDel = false;
-                    }
-                    return;
-                }
-
-                command.Dispose();
-                if (numDel == true)
-                {
-                    MainWindow.Accueil.NavigationService.Navigate(new Pieces());
+                    tampnom = nom.Text;
+                    nom.Text = "Ce fournisseur n'existe pas";
+                    nom.TextAlignment = TextAlignment.Center;
+                    nom.BorderBrush = Brushes.Red;
+                    nom.Foreground = Brushes.Red;
+                    nomDel = false;
                 }
             }
             if (!canSubmit)
@@ -443,9 +497,9 @@ namespace bdd_projet
         }
         private void KeyEnter(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Return)
+            if (e.Key == Key.Return && Submit.IsEnabled)
             {
-                Submit_Click(sender, e);
+                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(num), null);
                 FocusManager.SetFocusedElement(FocusManager.GetFocusScope(desc), null);
                 FocusManager.SetFocusedElement(FocusManager.GetFocusScope(nom), null);
                 FocusManager.SetFocusedElement(FocusManager.GetFocusScope(numfourn), null);
@@ -453,13 +507,16 @@ namespace bdd_projet
                 FocusManager.SetFocusedElement(FocusManager.GetFocusScope(dateIntro), null);
                 FocusManager.SetFocusedElement(FocusManager.GetFocusScope(dateDisc), null);
                 FocusManager.SetFocusedElement(FocusManager.GetFocusScope(appro), null);
+                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(quantite), null);
                 Keyboard.ClearFocus();
+                Submit_Click(sender, e);
             }
         }
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(10, 0, 0, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 1));
-            marginAn.EasingFunction = new QuadraticEase();
+            CubicEase ce = new CubicEase(); ce.EasingMode = EasingMode.EaseInOut;
+            marginAn.EasingFunction = ce;
 
             MainWindow.Accueil.BeginAnimation(Control.MarginProperty, marginAn);
 
@@ -472,19 +529,11 @@ namespace bdd_projet
             form.BeginAnimation(Control.MarginProperty, db);
             MainWindow.Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
         }
-        private bool AssociationNumSiretExiste(string num, int siret)
-        {
-            for (int i = 0; i < listeNum.Count; i++)
-            {
-                if (listeNum[i][0] == num && int.Parse(listeNum[i][1]) == siret) { return true; }
-            }
-            return false;
-        }
         private void num_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (value == 1)
             {
-                if (int.TryParse(nom.Text, out int z) && AssociationNumSiretExiste(num.Text, z))
+                if (int.TryParse(nom.Text, out int z) && !string.IsNullOrEmpty(nom.Text))
                 {
                     MySqlCommand command = MainWindow.maConnexion.CreateCommand();
                     string request = "SELECT * FROM pieces WHERE numPiece=@num AND Siret=@siret";
@@ -492,55 +541,84 @@ namespace bdd_projet
                     command.Parameters.Add("@num", MySqlDbType.VarChar).Value = num.Text;
                     command.Parameters.Add("@siret", MySqlDbType.Int32).Value = int.Parse(nom.Text);
                     MySqlDataReader reader = command.ExecuteReader();
+                    string ans = reader.Read().ToString();
 
-                    while (reader.Read())
+                    if (ans == "False")
                     {
-                        desc.Text = reader.GetString(1);
-                        descDel = true;
-                        Reaccessible(desc);
-                        numfourn.Text = reader.GetString(3);
-                        numfournDel = true;
-                        Reaccessible(numfourn);
-                        prix.Text = reader.GetString(4);
-                        prixDel = true;
-                        Reaccessible(prix);
-                        dateIntro.Text = Convert.ToDateTime(reader.GetString(5)).ToString("yyyy-MM-dd");
-                        introDel = true;
-                        Reaccessible(dateIntro);
-                        if (reader.IsDBNull(6))
+                        Unaccessible(desc);
+                        desc.Text = "Description";
+                        Unaccessible(numfourn);
+                        numfourn.Text = "n° produit fournisseur";
+                        Unaccessible(prix);
+                        prix.Text = "Prix";
+                        Unaccessible(dateIntro);
+                        dateIntro.Text = "Date d'introduction";
+                        Unaccessible(dateDisc);
+                        dateDisc.Text = "Date discontinuité";
+                        Unaccessible(appro);
+                        appro.Text = "Délai d'approvisionnement";
+                        Unaccessible(quantite);
+                        quantite.Text = "Quantité";
+                        Submit.IsEnabled = false;
+                    }
+                    else
+                    {
+                        reader.Close();
+                        reader = command.ExecuteReader();
+                        while (reader.Read())
                         {
-                            dateDisc.Text = "";
+                            desc.Text = reader.GetString(1);
+                            descDel = true;
+                            Reaccessible(desc);
+                            numfourn.Text = reader.GetString(3);
+                            numfournDel = true;
+                            Reaccessible(numfourn);
+                            prix.Text = reader.GetString(4);
+                            prixDel = true;
+                            Reaccessible(prix);
+                            dateIntro.Text = Convert.ToDateTime(reader.GetString(5)).ToString("yyyy-MM-dd");
+                            introDel = true;
+                            Reaccessible(dateIntro);
+                            if (reader.IsDBNull(6))
+                            {
+                                dateDisc.Text = "";
+                            }
+                            else
+                            {
+                                dateDisc.Text = Convert.ToDateTime(reader.GetString(6)).ToString("yyyy-MM-dd");
+                            }
+                            discDel = true;
+                            Reaccessible(dateDisc);
+                            appro.Text = reader.GetString(7);
+                            approDel = true;
+                            Reaccessible(appro);
+                            quantite.Text = reader.GetString(8);
+                            quantiteDel = true;
+                            Reaccessible(quantite);
+                            Submit.IsEnabled = true;
                         }
-                        else
-                        {
-                            dateDisc.Text = Convert.ToDateTime(reader.GetString(6)).ToString("yyyy-MM-dd");
-                        }
-                        discDel = true;
-                        Reaccessible(dateDisc);
-                        appro.Text = reader.GetString(7);
-                        approDel = true;
-                        Reaccessible(appro);
                     }
 
                     command.Dispose();
-                    Submit.IsEnabled = true;
                 }
-            }
-            else if (unable)
-            {
-                Unaccessible(desc);
-                desc.Text = "Description";
-                Unaccessible(numfourn);
-                numfourn.Text = "n° produit fournisseur";
-                Unaccessible(prix);
-                prix.Text = "Prix";
-                Unaccessible(dateIntro);
-                dateIntro.Text = "Date d'introduction";
-                Unaccessible(dateDisc);
-                dateDisc.Text = "Date discontinuité";
-                Unaccessible(appro);
-                appro.Text = "Délai d'approvisionnement";
-                Submit.IsEnabled = false;
+                else if (unable)
+                {
+                    Unaccessible(desc);
+                    desc.Text = "Description";
+                    Unaccessible(numfourn);
+                    numfourn.Text = "n° produit fournisseur";
+                    Unaccessible(prix);
+                    prix.Text = "Prix";
+                    Unaccessible(dateIntro);
+                    dateIntro.Text = "Date d'introduction";
+                    Unaccessible(dateDisc);
+                    dateDisc.Text = "Date discontinuité";
+                    Unaccessible(appro);
+                    appro.Text = "Délai d'approvisionnement";
+                    Unaccessible(quantite);
+                    quantite.Text = "Quantité";
+                    Submit.IsEnabled = false;
+                }
             }
         }
     }
