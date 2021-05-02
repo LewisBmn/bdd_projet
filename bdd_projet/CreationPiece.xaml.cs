@@ -340,6 +340,7 @@ namespace bdd_projet
                 fourExists.Parameters.Add("@siret", MySqlDbType.VarChar).Value = String.Concat(nom.Text.Where(c => !Char.IsWhiteSpace(c)));
                 MySqlDataReader reader = fourExists.ExecuteReader();
                 string ans = reader.Read().ToString();
+                reader.Close();
 
                 if (ans == "True")
                 {

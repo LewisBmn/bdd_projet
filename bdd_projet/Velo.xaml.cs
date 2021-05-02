@@ -246,5 +246,10 @@ namespace bdd_projet
             }
         }
         #endregion
+
+        private void dataGrid1_CopyingRowClipboardContent(object sender, DataGridRowClipboardEventArgs e)
+        {
+
+        }
     }
 }

@@ -20,9 +20,10 @@ namespace bdd_projet
     /// </summary>
     public partial class Home : Page
     {
-        public Home()
+        public Home(Button Demo)
         {
             InitializeComponent();
+            Demo.Visibility = Visibility.Visible;
         }
     }
 }

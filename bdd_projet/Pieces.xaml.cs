@@ -282,5 +282,10 @@ namespace bdd_projet
                 dataGrid1.ItemsSource = dt.DefaultView;
             }
         }
+
+        private void dataGrid1_CopyingRowClipboardContent(object sender, DataGridRowClipboardEventArgs e)
+        {
+
+        }
     }
 }

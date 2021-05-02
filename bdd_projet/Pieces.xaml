@@ -142,6 +142,8 @@
         <DataGrid Name="dataGrid1" Width="730" Height="330" 
                   HorizontalAlignment="Center" VerticalAlignment="Bottom"
                   AlternatingRowBackground="Gainsboro"  AlternationCount="2"
-                  IsReadOnly="True"/>
+                  IsReadOnly="True"
+                  SelectionUnit="Cell"
+                  CopyingRowClipboardContent="dataGrid1_CopyingRowClipboardContent"/>
     </Grid>
 </Page>

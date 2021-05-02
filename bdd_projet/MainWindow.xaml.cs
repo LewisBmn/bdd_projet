@@ -1,20 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using MySql.Data.MySqlClient;
-using System.Windows.Threading;
 using System.Windows.Media.Animation;
+using System.Windows.Threading;
 
 namespace bdd_projet
 {
@@ -26,13 +16,13 @@ namespace bdd_projet
         public static MySqlConnection maConnexion;
         public static Frame Accueil;
 
+
         public MainWindow()
         {
             InitializeComponent();
 
             MinimizeButton.Click += (s, e) => WindowState = WindowState.Minimized;
             CloseButton.Click += (s, e) => Close();
-
             Accueil = AccueilW;
 
             timer.Tick += new EventHandler(delegate (Object o, EventArgs a)
@@ -40,7 +30,7 @@ namespace bdd_projet
                 timer.Stop();
                 Accueil.Visibility = Visibility.Visible;
 
-                Accueil.NavigationService.Navigate(new Home());
+                Accueil.NavigationService.Navigate(new Home(Demo));
                 TglButton.IsChecked = false;
 
                 DoubleAnimation doubleAnimation = new DoubleAnimation(0, 1, new TimeSpan(0, 0, 0, 1, 800));
@@ -72,14 +62,16 @@ namespace bdd_projet
         #region Click/Transitions
         void Loading(int val) //1 = vélo ; 0 = home ; 2 = pieces ; -1 = start
         {
-            if (val == 0)
+            if (val <= 0)
             {
                 timer.Tick += new EventHandler(delegate (Object o, EventArgs a)
                 {
                     timer.Stop();
                     Accueil.Visibility = Visibility.Visible;
+                    Demo.Visibility = Visibility.Collapsed;
 
-                    Accueil.NavigationService.Navigate(new Home());
+                    if (val == 0) { Accueil.NavigationService.Navigate(new Home(Demo)); }
+                    if (val == -1) { Accueil.NavigationService.Navigate(new AffichageDemo(0, true)); }
                     TglButton.IsChecked = false;
 
                     DoubleAnimation doubleAnimation = new DoubleAnimation(0, 1, new TimeSpan(0, 0, 0, 2, 0));
@@ -88,8 +80,15 @@ namespace bdd_projet
                     ThicknessAnimation marginAn = new ThicknessAnimation(new Thickness(0, 200, 0, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 400));
                     marginAn.EasingFunction = new ExponentialEase();
 
+                    if (val == -1) { marginAn = new ThicknessAnimation(new Thickness(200, 0, 0, 0), new Thickness(0, 0, 0, 0), new TimeSpan(0, 0, 0, 0, 400)); }
+
                     Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
                     Accueil.BeginAnimation(Control.MarginProperty, marginAn);
+
+                    DoubleAnimation db = new DoubleAnimation(0, 1, new TimeSpan(0, 0, 0, 1, 0));
+                    db.EasingFunction = new ExponentialEase();
+
+                    Demo.BeginAnimation(Control.OpacityProperty, db);
                 });
                 timer.Interval = TimeSpan.FromSeconds(0.15);
                 timer.Start();
@@ -100,6 +99,7 @@ namespace bdd_projet
                 {
                     timer.Stop();
                     Accueil.Visibility = Visibility.Visible;
+                    Demo.Visibility = Visibility.Collapsed;
 
                     if (val == 1) Accueil.NavigationService.Navigate(new Velo());
                     if (val == 2) Accueil.NavigationService.Navigate(new Pieces());
@@ -125,12 +125,16 @@ namespace bdd_projet
             {
                 marginAn = new ThicknessAnimation(new Thickness(0, 0, 0, 0), new Thickness(0, 0, 0, 100), new TimeSpan(0, 0, 0, 0, 500));
             }
+
+            if (val == -1) { marginAn = new ThicknessAnimation(new Thickness(0, 0, 0, 0), new Thickness(0, 0, 400, 0), new TimeSpan(0, 0, 0, 0, 500)); }
             marginAn.EasingFunction = new ExponentialEase();
 
             Accueil.Opacity = 1;
 
             Accueil.BeginAnimation(Control.MarginProperty, marginAn);
             Accueil.BeginAnimation(Control.OpacityProperty, doubleAnimation);
+
+            Demo.BeginAnimation(Control.OpacityProperty, doubleAnimation);
 
             Loading(val);
         }
@@ -184,6 +188,11 @@ namespace bdd_projet
         private void clients_Click(object sender, RoutedEventArgs e)
         {
             Click(4);
+        }
+
+        private void Demo_Click(object sender, RoutedEventArgs e)
+        {
+            Click(-1);
         }
     }
 }
